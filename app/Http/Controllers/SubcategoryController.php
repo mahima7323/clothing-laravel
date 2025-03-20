@@ -83,13 +83,18 @@ class SubcategoryController extends Controller
     }
 
     public function show($subcategory)
-{
-    // You can fetch the subcategory data here
-    $subcategoryData = Subcategory::find($subcategory);
+    {
+        // Fetch the subcategory data
+        $subcategoryData = Subcategory::where('category_id', (int)$subcategory)->get();
 
-    // Return the view or a response with the subcategory data
-    return view('admin.subcategories.show', compact('subcategoryData'));
-}
+        // Check if subcategory exists
+        if (!$subcategoryData) {
+            return response()->json(['error' => 'Subcategory not found'], 404);
+        }
+
+        // Return the subcategory data as JSON
+        return response()->json($subcategoryData);
+    }
 
 
 

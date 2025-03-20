@@ -3,7 +3,7 @@
 @section('content')
 <div class="container mt-5">
     <h2>Product List</h2>
-    <a href="{{ route('products.create') }}" class="btn btn-primary mb-3">Add Product</a>
+    <a href="{{ route('admin.products.create') }}" class="btn btn-primary mb-3">Add Product</a>
 
     <a href="{{ route('admin.products.create') }}" class="btn btn-primary mb-3">Add Product</a>
     @if (session('success'))
@@ -33,12 +33,12 @@
                     <td>{{ $product->quantity }}</td>
                     <td>
                         @if($product->image)
-                            <img src="{{ asset('storage/' . $product->image) }}" width="50" alt="Product Image">
+                            <img src="{{ asset("storage/{$product->image}") }}" width="50" alt="Product Image">
                         @endif
                     </td>
                     <td>
                         <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-warning">Edit</a>
-                        <form action="{{ route('admin.products.delete', $product->id) }}" method="POST" style="display:inline-block;">
+                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline-block;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">Delete</button>

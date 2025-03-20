@@ -128,11 +128,12 @@
     </form>
 </div>
 
-@push('scripts')
 <script>
     document.getElementById('category').addEventListener('change', function() {
         var categoryId = this.value;
-        var subcategorySelect = document.getElementById('subcategory');
+        console.log('Selected category:', categoryId);
+        var subcategorySelect = document.getElementById('subcategory_id');
+        console.log('subcategorySelect', subcategorySelect)
         subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>'; // Reset the subcategory dropdown
 
         if (categoryId) {
@@ -140,6 +141,7 @@
             fetch('/admin/subcategories/' + categoryId)
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Subcategories:', data);
                     if (data.length > 0) {
                         // Populate subcategories if available
                         data.forEach(function(subcategory) {
@@ -160,6 +162,5 @@
         }
     });
 </script>
-@endpush
 
 @endsection

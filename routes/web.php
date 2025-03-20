@@ -48,6 +48,8 @@ Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('adm
 Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
     // Product Routes
     Route::resource('products', ProductController::class);
+    Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('products/create', [ProductController::class, 'store'])->name('products.store');
 
     // Category Routes
     Route::resource('categories', CategoryController::class);
@@ -67,7 +69,7 @@ Route::get('/user/profile', [UsersController::class, 'showUserData'])->middlewar
 
 Route::get('/admin/subcategories/{subcategory}', [SubcategoryController::class, 'show']);
 // Remove this line
-Route::get('/admin/subcategories/{subcategory}', [SubcategoryController::class, 'show'])->name('subcategories.show');
+// Route::get('/admin/subcategories/{subcategory}', [SubcategoryController::class, 'show'])->name('subcategories.show');
 
 
 // Remove duplicate routes
@@ -75,12 +77,12 @@ Route::get('/admin/subcategories/{subcategory}', [SubcategoryController::class, 
 // Route::get('/admin/subcategories/get/{category_id}', [SubcategoryController::class, 'getSubcategories'])->name('subcategories.get');
 // Route::get('/admin/get-subcategories/{category_id}', [SubcategoryController::class, 'getSubcategories'])->name('subcategories.get');
 
-Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
-    Route::resource('products', ProductController::class);
-});
+// Route::prefix('admin')->name('admin.')->middleware('auth:admin')->group(function () {
+//     Route::resource('products', ProductController::class);
+// });
 
-Route::get('/admin/products/create', [ProductController::class, 'create'])->name('products.create');
+// Route::get('/admin/products/create', [ProductController::class, 'create'])->name('products.create');
 
-Route::prefix('admin')->group(function () {
-    Route::get('admin/products/create', [ProductController::class, 'create'])->name('admin.products.create');
-});
+// Route::prefix('admin')->group(function () {
+//     Route::get('admin/products/create', [ProductController::class, 'create'])->name('admin.products.create');
+// });

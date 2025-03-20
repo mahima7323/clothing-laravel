@@ -131,9 +131,7 @@
 <script>
     document.getElementById('category').addEventListener('change', function() {
         var categoryId = this.value;
-        console.log('Selected category:', categoryId);
         var subcategorySelect = document.getElementById('subcategory_id');
-        console.log('subcategorySelect', subcategorySelect)
         subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>'; // Reset the subcategory dropdown
 
         if (categoryId) {
@@ -141,7 +139,6 @@
             fetch('/admin/subcategories/' + categoryId)
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Subcategories:', data);
                     if (data.length > 0) {
                         // Populate subcategories if available
                         data.forEach(function(subcategory) {
@@ -156,7 +153,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error loading subcategories:', error);
+                    // console.error('Error loading subcategories:', error);
                     subcategorySelect.innerHTML = '<option value="">Error loading subcategories</option>';
                 });
         }

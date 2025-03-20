@@ -8,12 +8,12 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubcategoryController;
 
 // User Registration and Login Routes
-Route::get('/register', [UsersController::class, 'index'])->name('register');
-Route::post('/register', [UsersController::class, 'store'])->name('store');
+Route::get('/register', [UsersController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [UsersController::class, 'register'])->name('register.submit');
 Route::get('/login', function () {
     return view('login');
 })->name('login');
-Route::post('/login', [UsersController::class, 'log'])->name('log');
+Route::post('/login', [UsersController::class, 'login'])->name('login');
 Route::get('/logout', [UsersController::class, 'logout'])->name('logout');
 
 // Home Route (User Side)

@@ -24,7 +24,7 @@ class UsersController extends Controller
 
         // Attempt to authenticate the user
         if (Auth::attempt($request->only('email', 'password'))) {
-            return redirect()->route('dashboard')->with('success', 'Login successful!');
+            return redirect()->route('welcome')->with('success', 'Login successful!');
         }
 
         // If authentication fails, redirect back with error
@@ -58,7 +58,7 @@ class UsersController extends Controller
             // Log in the user after registration
             Auth::login($user);
 
-            return redirect()->route('dashboard')->with('success', 'Registration successful!');
+            return redirect()->route('welcome')->with('success', 'Registration successful!');
         } catch (\Exception $e) {
             return redirect()->back()->withErrors(['error' => 'Registration failed: ' . $e->getMessage()]);
         }

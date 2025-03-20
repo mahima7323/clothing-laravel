@@ -1,0 +1,14 @@
+{
+  "resources/js/admin.js": {
+    "file": "assets/admin-RyUsH1Zg.js",
+    "name": "admin",
+    "src": "resources/js/admin.js",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-DspuE8pW.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  }
+}

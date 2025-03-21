@@ -110,6 +110,12 @@ class ProductController extends Controller
         $subcategories = Subcategory::where('category_id', $category_id)->get();
         return response()->json($subcategories);
     }
+
+    public function userProductList()
+    {
+        $products = Product::all(); // દરેક પ્રોડક્ટ્સ લાવો
+        return view('product_list', compact('products')); // product_list.blade.php માં ડેટા મોકલો
+    }
     
     
 

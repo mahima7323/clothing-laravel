@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
@@ -34,7 +35,7 @@ class UsersController extends Controller
     // Show the registration page
     public function showRegistrationForm()
     {
-        return view('register');  // Changed to match correct path
+        return view('register');
     }
 
     // Handle the registration
@@ -45,14 +46,20 @@ class UsersController extends Controller
             'name' => 'required|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
+            'cno' => 'nullable|digits:10',
+            'gender' => 'required|in:Male,Female,Other',
+            'city' => 'required|max:100',
         ]);
 
         try {
-            // Create a new user
+            // Create a new user with hashed password
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => bcrypt($request->password),
+                'password' => Hash::make($request->password),
+                'cno' => $request->cno,
+                'gender' => $request->gender,
+                'city' => $request->city,
             ]);
 
             // Log in the user after registration
@@ -64,12 +71,13 @@ class UsersController extends Controller
         }
     }
 
-
+    // Show users list (Admin side)
     public function showUsers()
-{
-    $users = User::all(); // Badha users fetch karva
-    return view('admin.users', compact('users'));
-}
+    {
+        $users = User::all(); // Fetch all users
+        return view('admin.users', compact('users'));
+    }
+
     // Handle logout
     public function logout()
     {

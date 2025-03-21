@@ -132,12 +132,14 @@
         <label for="cno">Contact No:</label>
         <input type="text" name="cno" value="{{ old('cno') }}" required><br>
 
+     
         <label for="gender">Gender:</label>
-        <select name="gender" required>
-            <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
-            <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
-            <option value="Other" {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
-        </select><br>
+<select name="gender" required>
+    <option value="Male" {{ old('gender') == 'Male' ? 'selected' : '' }}>Male</option>
+    <option value="Female" {{ old('gender') == 'Female' ? 'selected' : '' }}>Female</option>
+    <option value="Other" {{ old('gender') == 'Other' ? 'selected' : '' }}>Other</option>
+</select><br>
+
 
         <label for="city">City:</label>
         <input type="text" name="city" value="{{ old('city') }}" required><br>

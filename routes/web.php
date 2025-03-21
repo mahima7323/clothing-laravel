@@ -8,18 +8,37 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubcategoryController;
 
 // User Registration and Login Routes
+// Route::get('/register', [UsersController::class, 'showRegistrationForm'])->name('register');
+// Route::post('/register', [UsersController::class, 'register'])->name('register.submit');
+
+// Route::get('/login', function () {
+//     return view('login');
+// })->name('login');
+// Route::post('/login', [UsersController::class, 'login'])->name('login');
+// Route::get('/logout', [UsersController::class, 'logout'])->name('logout');
+
+// // Home Route (User Side)
+// Route::get('/', function () {
+//     return view('welcome');
+// })->middleware('auth')->name('welcome');
+
+
+
+
+
+Route::get('/login', [UsersController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [UsersController::class, 'login'])->name('login.submit');
+
 Route::get('/register', [UsersController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [UsersController::class, 'register'])->name('register.submit');
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
-Route::post('/login', [UsersController::class, 'login'])->name('login');
-Route::get('/logout', [UsersController::class, 'logout'])->name('logout');
 
-// Home Route (User Side)
+Route::get('/logout', [UsersController::class, 'logout'])->name('logout');
+Route::get('/users', [UsersController::class, 'showUsers'])->name('admin.users');
+
 Route::get('/', function () {
     return view('welcome');
-})->middleware('auth')->name('welcome');
+})->name('welcome');
+
 
 // User Side - Product List
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');

@@ -7,6 +7,7 @@
     <title>Login Page</title>
 
     <style>
+        /* General Styling */
         * {
             margin: 0;
             padding: 0;
@@ -36,7 +37,7 @@
             color: #333;
         }
 
-        .login-container input[type="text"],
+        .login-container input[type="email"],
         .login-container input[type="password"] {
             width: 100%;
             padding: 12px;
@@ -47,15 +48,15 @@
             transition: all 0.3s ease;
         }
 
-        .login-container input[type="text"]:focus,
+        .login-container input[type="email"]:focus,
         .login-container input[type="password"]:focus {
-            border-color: #333;
+            border-color: #3498db;
         }
 
         .login-container button {
             width: 100%;
             padding: 12px;
-            background-color: #333;
+            background-color: #3498db;
             color: #fff;
             border: none;
             border-radius: 5px;
@@ -65,63 +66,62 @@
         }
 
         .login-container button:hover {
-            background-color: #555;
+            background-color: #2980b9;
         }
 
-        .login-container p {
+        .error {
+            color: red;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        p {
             margin-top: 15px;
             font-size: 14px;
             color: #777;
         }
 
-        .login-container a {
-            color: #333;
+        a {
+            color: #3498db;
             text-decoration: none;
         }
 
-        .login-container a:hover {
+        a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
 
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-
 <body>
-    <h2>Login Form</h2>
-    
-    <!-- Display errors -->
-    @if ($errors->any())
-        <div class="error">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-    
-    <form action="{{ route('login') }}" method="POST">
-        @csrf
-        
-        <label for="email">Email:</label>
-        <input type="email" name="email" required><br>
-        
-        <label for="password">Password:</label>
-        <input type="password" name="password" required><br>
-        
-        <button type="submit">Login</button>
-    </form>
+    <div class="login-container">
+        <h2>Login Form</h2>
+
+        <!-- Display errors -->
+        @if ($errors->any())
+            <div class="error">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <!-- Login Form -->
+        <form action="{{ route('login') }}" method="POST">
+            @csrf
+
+            <label for="email">Email:</label>
+            <input type="email" name="email" placeholder="Enter your email" required><br>
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" placeholder="Enter your password" required><br>
+
+            <button type="submit">Login</button>
+        </form>
+
+        <p>Don't have an account? <a href="{{ route('register') }}">Register here</a></p>
+    </div>
 </body>
-
-</html>
-
 
 </html>

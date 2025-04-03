@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Subcategory;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -116,7 +117,54 @@ class ProductController extends Controller
         $products = Product::all(); // દરેક પ્રોડક્ટ્સ લાવો
         return view('product_list', compact('products')); // product_list.blade.php માં ડેટા મોકલો
     }
+// -----------------------------------------------------------------------------------------
+
+    //Show products by category name
+    // public function showCategoryProducts($categoryName)
+    // {
+    //     try {
+    //         // Log the received category name
+    //         Log::info('Received category name: ' . $categoryName);
+    
+    //         // Fetch category (case-insensitive)
+    //         $category = DB::table('categories')
+    //             ->whereRaw('LOWER(name) = ?', [strtolower($categoryName)])
+    //             ->first();
+    
+    //         if (!$category) {
+    //             // Log if the category is not found
+    //             Log::info('❌ Category not found: ' . $categoryName);
+    //             return back()->with('error', 'Category not found.');
+    //         }
+    
+    //         // Log the category found
+    //         Log::info('✅ Category found! ID: ' . $category->id);
+    
+    //         // Fetch products for this category
+    //         $products = DB::table('products')
+    //             ->where('category_id', $category->id)
+    //             ->get();
+    
+    //         // Log the products fetched (convert to JSON string for readability)
+    //         Log::info('Products for Category ' . $categoryName . ': ' . json_encode($products->toArray(), JSON_PRETTY_PRINT));
+    
+    //         // If no products are found, log it
+    //         if ($products->isEmpty()) {
+    //             Log::info('🛍 No products found for Category ' . $categoryName);
+    //         }
+    
+    //         // Return the view with products and category name
+    //         return view("user_product.$categoryName", compact('products', 'categoryName'));
+    
+    //     } catch (\Exception $e) {
+    //         // Log the error if any exception occurs
+    //         Log::error('Error occurred while fetching products for category ' . $categoryName . ': ' . $e->getMessage());
+    //         return back()->with('error', 'An error occurred while fetching products.');
+    //     }
+    // }
     
     
+
+        
 
 }

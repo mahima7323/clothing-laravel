@@ -125,9 +125,9 @@
 
         <div class="contact-info">
             <h3>Contact Information</h3>
-            <p>Email: support@fashionhub.com</p>
-            <p>Phone: +1 (123) 456-7890</p>
-            <p>Address: 123 Fashion St, New York, NY 10001</p>
+            <p>Email: fashion@gmail.com</p>
+            <p>Phone: +91 9157396433</p>
+            <p>Address: 123 Fashion St,surat</p>
         </div>
     </div>
 

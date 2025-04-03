@@ -4,6 +4,7 @@
     <title>Admin Panel</title>
     @vite('resources/js/admin.js')
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -49,31 +50,38 @@
             font-weight: bold;
         }
 
+        .dropdown {
+            cursor: pointer;
+            padding: 15px 20px;
+            display: block;
+            background-color: #1a1a1a;
+            color: #f4f4f4;
+        }
+
+        .dropdown:hover {
+            background-color: #555;
+        }
+
+        .submenu {
+            display: none;
+            background-color: #333;
+            padding-left: 20px;
+        }
+
+        .submenu a {
+            font-size: 14px;
+            color: #ddd;
+            padding: 10px 20px;
+            display: block;
+        }
+
+        .submenu a:hover {
+            background-color: #444;
+        }
+
         .content {
             margin-left: 250px;
             padding: 20px;
-        }
-
-        .content h3 {
-            color: #f4f4f4;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-
-        .card {
-            background-color: #333;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .card h4 {
-            color: #f4f4f4;
-        }
-
-        .card p {
-            color: #ddd;
         }
 
         .logout-btn {
@@ -84,27 +92,12 @@
             padding: 10px 20px;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            margin-top: 20px; /* Ensure spacing from other elements */
-            width: 100%; /* Make the button span the width of the sidebar */
+            width: 100%;
             text-align: center;
         }
 
         .logout-btn:hover {
             background-color: #c0392b;
-        }
-
-        .submenu {
-            padding-left: 20px;
-            background-color: #333;
-        }
-
-        .submenu a {
-            font-size: 14px;
-            color: #ddd;
-        }
-
-        .submenu a:hover {
-            background-color: #444;
         }
     </style>
 </head>
@@ -112,27 +105,30 @@
 
 <div class="sidebar">
     <a href="{{ route('admin.dashboard') }}" class="{{ request()->is('admin') ? 'active' : '' }}">Dashboard</a>
-    <a href="{{ route('admin.categories.index') }}" class="{{ request()->is('admin/categories') ? 'active' : '' }}">Categories</a>
+    
+    <div class="dropdown">Categories</div>
     <div class="submenu">
         <a href="{{ route('admin.categories.index') }}">Category Index</a>
         <a href="{{ route('admin.categories.create') }}">Add Category</a>
     </div>
-    <a href="{{ route('admin.subcategories.index') }}" class="{{ request()->is('admin/subcategories') ? 'active' : '' }}">Subcategories</a>
+    
+    <div class="dropdown">Subcategories</div>
     <div class="submenu">
         <a href="{{ route('admin.subcategories.index') }}">Subcategory Index</a>
         <a href="{{ route('admin.subcategories.create') }}">Add Subcategory</a>
     </div>
-    <a href="{{ route('admin.products.index') }}" class="{{ request()->is('admin/products') ? 'active' : '' }}">Products</a>
+    
+    <div class="dropdown">Products</div>
     <div class="submenu">
         <a href="{{ route('admin.products.index') }}">Product Index</a>
         <a href="{{ route('admin.products.create') }}">Add Product</a>
     </div>
-    <a href="{{ route('admin.users') }}" class="{{ request()->is('admin/users') ? 'active' : '' }}">User Management</a>
+    
+    <a href="{{ route('admin.users') }}">User Management</a>
     <a href="#">Orders</a>
     <a href="#">Reports</a>
     <a href="#">Settings</a>
     
-    <!-- Logout Button -->
     <form action="{{ route('admin.logout') }}" method="POST" style="display: inline;">
         @csrf
         <button type="submit" class="logout-btn">Logout</button>
@@ -142,6 +138,14 @@
 <div class="content">
     @yield('content')
 </div>
+
+<script>
+    $(document).ready(function () {
+        $('.dropdown').click(function () {
+            $(this).next('.submenu').slideToggle();
+        });
+    });
+</script>
 
 </body>
 </html>

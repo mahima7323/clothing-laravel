@@ -65,12 +65,12 @@
         <p>If you have any questions or need assistance, feel free to reach out to us using the details below:</p>
 
         <div class="contact-info">
-            <p><strong>Email:</strong> support@fashionhub.com</p>
-            <p><strong>Phone:</strong> +1 (123) 456-7890</p>
-            <p><strong>Address:</strong> 123 Fashion St, New York, NY 10001</p>
+            <p><strong>Email:</strong> fashion@gmail.com</p>
+            <p><strong>Phone:</strong> +91 9157396433</p>
+            <p><strong>Address:</strong> 123 Fashion St, surat</p>
             <p><strong>Working Hours:</strong> Mon - Fri: 9:00 AM - 6:00 PM</p>
         </div>
-    </div>
+    </div><br><br><br><br><br><br>
 
     
 </body>

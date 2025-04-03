@@ -67,9 +67,9 @@ class UsersController extends Controller
 
             return redirect()->route('welcome')->with('success', 'Registration successful!');
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Registration failed: ' . $e->getMessage()]);
+            return redirect()->back()->withErrors(['error' => 'Registration failed. Please try again.']);
         }
-    }
+    }   
 
     // Show users list (Admin side)
     public function showUsers()
@@ -82,6 +82,6 @@ class UsersController extends Controller
     public function logout()
     {
         Auth::logout();
-        return redirect()->route('login')->with('success', 'Logged out successfully!');
+        return redirect('/login')->with('success', 'You have been logged out successfully.');
     }
 }

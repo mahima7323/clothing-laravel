@@ -103,24 +103,24 @@
         <h2>Meet Our Team</h2>
         <div class="team">
             <div class="member">
-                <img src="https://via.placeholder.com/180" alt="Alice">
-                <h3>Alice Johnson</h3>
-                <p>Founder & CEO</p>
+                <!-- <img src="https://via.placeholder.com/180" alt="Alice"> -->
+                <h3>Mahima Thaker</h3>
+                <!-- <p>Founder & CEO</p> -->
             </div>
             <div class="member">
-                <img src="https://via.placeholder.com/180" alt="David">
-                <h3>David Smith</h3>
-                <p>Creative Director</p>
+                <!-- <img src="https://via.placeholder.com/180" alt="David"> -->
+                <h3>Sanjana Mali</h3>
+                <!-- <p>Creative Director</p> -->
             </div>
             <div class="member">
-                <img src="https://via.placeholder.com/180" alt="Sophia">
-                <h3>Sophia Lee</h3>
-                <p>Marketing Manager</p>
+                <!-- <img src="https://via.placeholder.com/180" alt="Sophia"> -->
+                <h3>Shruti Lad</h3>
+                <!-- <p>Marketing Manager</p> -->
             </div>
             <div class="member">
-                <img src="https://via.placeholder.com/180" alt="Lucas">
-                <h3>Lucas Brown</h3>
-                <p>Product Designer</p>
+                <!-- <img src="https://via.placeholder.com/180" alt="Lucas"> -->
+                <h3>Yatisha Bhagat</h3>
+                <!-- <p>Product Designer</p> -->
             </div>
         </div>
     </div>

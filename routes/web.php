@@ -7,6 +7,28 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubcategoryController;
 
+
+use App\Http\Controllers\CartController;
+
+use App\Http\Controllers\WishlistController;
+
+use App\Http\Controllers\OrderController;
+
+ Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('order.place');
+ Route::get('/order-success', [OrderController::class, 'orderSuccess'])->name('order.success');
+
+Route::post('/wishlist/add', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
+Route::get('/wishlist', [WishlistController::class, 'viewWishlist'])->name('wishlist.view');
+Route::post('/wishlist/remove', [WishlistController::class, 'removeFromWishlist'])->name('wishlist.remove');
+
+Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('cart.add');
+Route::get('/cart', [CartController::class, 'viewCart'])->name('cart.view');
+Route::post('/cart/remove', [CartController::class, 'removeFromCart'])->name('cart.remove');
+Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+Route::post('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
+
+
+
 // User Registration and Login Routes
 // Route::get('/register', [UsersController::class, 'showRegistrationForm'])->name('register');
 // Route::post('/register', [UsersController::class, 'register'])->name('register.submit');
@@ -28,11 +50,11 @@ use App\Http\Controllers\SubcategoryController;
 
 Route::get('/login', [UsersController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [UsersController::class, 'login'])->name('login.submit');
+Route::post('/logout', [UsersController::class, 'logout'])->name('logout');
 
 Route::get('/register', [UsersController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [UsersController::class, 'register'])->name('register.submit');
 
-Route::get('/logout', [UsersController::class, 'logout'])->name('logout');
 Route::get('/users', [UsersController::class, 'showUsers'])->name('admin.users');
 
 Route::get('/', function () {
@@ -90,6 +112,16 @@ Route::get('/admin/subcategories/{subcategory}', [SubcategoryController::class, 
 // Remove this line
 // Route::get('/admin/subcategories/{subcategory}', [SubcategoryController::class, 'show'])->name('subcategories.show');
 
+Route::get('/category/{categoryName}', [ProductController::class, 'showCategoryProducts'])->name('category.products');
+ //Route::get('/category/{name}', [ProductController::class, 'showCategoryProducts']);
+ //Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.detail');
+
+
+ Route::get('/product/{id}', [ProductController::class, 'show'])->name('product.detail');
+ 
+
+
+//Route::get('/category/{categoryName}', [ProductController::class, 'showCategoryProducts']);
 
 // Remove duplicate routes
 // This was previously duplicated and needs to be removed

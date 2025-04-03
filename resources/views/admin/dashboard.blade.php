@@ -1,3 +1,4 @@
+@include('layouts.ad_header')
 @extends('layouts.admin_header')
 
 @section('content')
@@ -26,7 +27,7 @@
         <h3>Total Revenue</h3>
         <p>45,000/-</p>
     </div>
-</div>
+</div><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 
 <style>
     body, html {

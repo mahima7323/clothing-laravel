@@ -19,7 +19,7 @@
         }
 
         header {
-            background-color: #000; /* Black color */
+            background-color: #000;
             color: #fff;
             padding: 25px 50px;
             display: flex;
@@ -46,12 +46,6 @@
             transform: scale(1.1);
         }
 
-        .logo h1 {
-            font-size: 32px;
-            font-weight: bold;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
-        }
-
         nav ul {
             list-style: none;
             display: flex;
@@ -76,8 +70,26 @@
             transform: scale(1.05);
         }
 
+        .icons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .icon {
+            text-decoration: none;
+            color: #fff;
+            font-size: 22px;
+            transition: transform 0.3s ease;
+        }
+
+        .icon:hover {
+            transform: scale(1.2);
+            color: #f39c12;
+        }
+
         .btn-logout {
-            background-color: #e74c3c; /* Red color */
+            background-color: #e74c3c;
             padding: 10px 20px;
             border-radius: 30px;
             text-decoration: none;
@@ -87,11 +99,10 @@
         }
 
         .btn-logout:hover {
-            background-color: #c0392b; /* Darker red on hover */
+            background-color: #c0392b;
             transform: scale(1.05);
         }
 
-        /* Responsive Design */
         @media screen and (max-width: 768px) {
             header {
                 flex-direction: column;
@@ -119,7 +130,6 @@
     <header>
         <div class="logo">
             <img src="https://img.freepik.com/premium-vector/circle-floral-fashion-store-hanger-logo-design-vector_680355-4.jpg" alt="Logo">
-            
         </div>
         <nav>
             <ul>
@@ -130,8 +140,23 @@
                 <li><a href="/feedback">Feedback</a></li>
             </ul>
         </nav>
-        <a href="/logout" class="btn-logout">Logout</a>
+        
+        <div class="icons">
+            <a href="{{ route('wishlist.view') }}" class="icon">
+                <i class="fa-solid fa-heart"></i> <!-- Wishlist Icon -->
+            </a>
+            <a href="{{ route('cart.view') }}" class="icon">
+                <i class="fa-solid fa-cart-shopping"></i> <!-- Cart Icon -->
+            </a>
+        </div>
+        
+        <a href="#" class="btn-logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+            @csrf
+        </form>
     </header>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 </body>
 
 </html>

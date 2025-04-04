@@ -13,8 +13,29 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistController;
 
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\AdminDashboardController;
+
+Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+
+
+Route::get('/order/success', function () {
+    return view('orders.success');
+})->name('order.success');
+
+
+Route::get('/admin/dashboard', function () {
+    return view('admin.dashboard', [
+        'totalProducts' => 3, 
+        'totalUsers' => 5, 
+        'totalOrders' => 19, 
+        'totalRevenue' => 39288.00
+    ]);
+})->name('admin.dashboard');
+
+
 
  Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('order.place');
+ //Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('order.place');
  Route::get('/order-success', [OrderController::class, 'orderSuccess'])->name('order.success');
 
 Route::post('/wishlist/add', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');

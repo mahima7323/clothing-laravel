@@ -4,9 +4,33 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Product;
+use App\Models\User;
+use App\Models\Order;
+use App\Models\Category;
+use App\Models\Subcategory;
 
 class AdminController extends Controller
 {
+    public function dashboard()
+    {
+        $totalProducts = Product::count();
+        $totalUsers = User::count();
+        $totalOrders = Order::count();
+        $totalRevenue = Order::sum('total_price'); // Assuming total_price column exists
+        $totalCategories = Category::count();
+        $totalSubcategories = Subcategory::count();
+
+        return view('admin.dashboard', compact(
+            'totalProducts', 
+            'totalUsers', 
+            'totalOrders', 
+            'totalRevenue', 
+            'totalCategories', 
+            'totalSubcategories'
+        ));
+    }
+
     // Show the admin login page
     public function showLogin()
     {
@@ -16,7 +40,6 @@ class AdminController extends Controller
     // Handle the admin login
     public function login(Request $request)
     {
-        // Validate login credentials
         $request->validate([
             'email' => 'required|email',
             'password' => 'required|string|min:6',
@@ -24,26 +47,19 @@ class AdminController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        // Use the 'admin' guard to attempt login
-        if (Auth::guard('admin')->attempt($credentials)) {
-            // Redirect to admin dashboard if successful
+        if (Auth::attempt($credentials)) { // Default auth guard
+            session()->flash('success', 'Login Successful! Welcome to the Admin Dashboard.');
             return redirect()->route('admin.dashboard');
         } else {
-            // Redirect back with error message if login fails
-            return redirect()->back()->withErrors(['Invalid credentials']);
+            session()->flash('error', 'Invalid Credentials! Please try again.');
+            return redirect()->back();
         }
-    }
-
-    // Show the admin dashboard
-    public function dashboard()
-    {
-        return view('admin.dashboard');
     }
 
     // Admin logout
     public function logout()
     {
-        Auth::guard('admin')->logout();
-        return redirect()->route('admin.login');
+        Auth::logout(); // Use default guard
+        return redirect()->route('admin.login')->with('success', 'Logged out successfully.');
     }
 }

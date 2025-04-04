@@ -6,6 +6,7 @@
     <title>Shopping Cart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -145,7 +146,7 @@
                                 <button class="increase-qty" data-id="{{ $id }}">+</button>
                             </div>
                         </td>
-                        <td id="total-{{ $id }}">₹{{ number_format($item['price'] * $item['quantity'], 2) }}</td>
+                        <td id="total-{{ $id }}" data-price="{{ $item['price'] }}">₹{{ number_format($item['price'] * $item['quantity'], 2) }}</td>
                         <td>
                             <button class="btn-danger remove-from-cart" data-id="{{ $id }}">
                                 <i class="fa-solid fa-trash"></i> Remove
@@ -155,7 +156,7 @@
                 @endforeach
             </table>
             <p class="grand-total">Grand Total: <span id="grand-total">₹{{ number_format($grandTotal, 2) }}</span></p>
-            <form action="{{ route('order.place') }}" method="POST">
+            <form id="order-form">
                 @csrf
                 <button type="submit" class="btn-success">Place Order</button>
             </form>
@@ -164,53 +165,58 @@
 
     <script>
         $(document).ready(function () {
-            function updateGrandTotal(total) {
+            function updateGrandTotal() {
+                let total = 0;
+                $("td[id^='total-']").each(function () {
+                    total += parseFloat($(this).text().replace("₹", ""));
+                });
                 $("#grand-total").text("₹" + total.toFixed(2));
             }
 
-            function updateQuantity(id, newQty) {
-                $.ajax({
-                    url: "{{ route('cart.update') }}",
-                    method: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        id: id,
-                        quantity: newQty
-                    },
-                    success: function (response) {
-                        $("#qty-" + id).val(newQty);
-                        $("#total-" + id).text("₹" + response.new_total);
-                        updateGrandTotal(parseFloat(response.grand_total));
-                    }
+            $('.increase-qty, .decrease-qty').click(function () {
+                let id = $(this).data("id");
+                let qtyInput = $("#qty-" + id);
+                let currentQty = parseInt(qtyInput.val());
+                let price = parseFloat($("#total-" + id).data("price"));
+                let change = $(this).hasClass("increase-qty") ? 1 : -1;
+                let newQty = currentQty + change;
+
+                if (newQty < 1) return;
+
+                qtyInput.val(newQty);
+                let newTotal = (price * newQty).toFixed(2);
+                $("#total-" + id).text("₹" + newTotal);
+
+                updateGrandTotal();
+            });
+
+            $(document).on("click", ".remove-from-cart", function () {
+                let id = $(this).data("id");
+                $("#cart-item-" + id).fadeOut(300, function () {
+                    $(this).remove();
+                    updateGrandTotal();
                 });
-            }
-
-            $(".increase-qty").click(function () {
-                let id = $(this).data("id");
-                let newQty = parseInt($("#qty-" + id).val()) + 1;
-                updateQuantity(id, newQty);
             });
 
-            $(".decrease-qty").click(function () {
-                let id = $(this).data("id");
-                let newQty = parseInt($("#qty-" + id).val()) - 1;
-                if (newQty > 0) updateQuantity(id, newQty);
-            });
+            $("#order-form").submit(function (e) {
+                e.preventDefault();
 
-            $(".remove-from-cart").click(function () {
-                let id = $(this).data("id");
                 $.ajax({
-                    url: "{{ route('cart.remove') }}",
-                    method: "POST",
-                    data: { _token: "{{ csrf_token() }}", id: id },
+                    url: "{{ route('order.place') }}",
+                    type: "POST",
+                    data: { _token: "{{ csrf_token() }}" },
                     success: function (response) {
-                        $("#cart-item-" + id).remove();
-                        updateGrandTotal(parseFloat(response.grand_total));
-                        if (response.grand_total == 0) {
-                            $(".grand-total").remove();
-                            $("table").remove();
-                            $(".container").append('<p class="empty-cart">Your cart is empty. <i class="fa-solid fa-box-open"></i></p>');
+                        if (response.success) {
+                            Swal.fire('Success!', response.message, 'success')
+                                .then(() => {
+                                    window.location.href = response.redirect;
+                                });
+                        } else {
+                            Swal.fire('Error!', response.message, 'error');
                         }
+                    },
+                    error: function () {
+                        Swal.fire('Error!', 'Something went wrong. Please try again.', 'error');
                     }
                 });
             });

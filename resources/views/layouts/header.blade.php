@@ -145,7 +145,8 @@
             <a href="{{ route('wishlist.view') }}" class="icon">
                 <i class="fa-solid fa-heart"></i> <!-- Wishlist Icon -->
             </a>
-            <a href="{{ route('cart.view') }}" class="icon">
+            <a href="{{ route('cart.page') }}" class="icon">
+           
                 <i class="fa-solid fa-cart-shopping"></i> <!-- Cart Icon -->
             </a>
         </div>

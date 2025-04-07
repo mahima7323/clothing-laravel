@@ -8,6 +8,12 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
+
+    public function index()
+    {
+        $orders = Order::with(['user', 'product'])->paginate(10);
+        return view('admin.orders.index', compact('orders'));
+    }
     public function placeOrder(Request $request)
     {
         // Check if the user is logged in

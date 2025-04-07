@@ -1,11 +1,12 @@
 @extends('layouts.admin_header')
 
 @section('content')
+
 <div class="container">
     <h2 class="page-title">Category List</h2>
 
     <!-- Category Table -->
-    <table class="table table-bordered table-striped table-hover">
+    <table class="table table-bordered table-hover">
         <thead>
             <tr>
                 <th>ID</th>
@@ -15,25 +16,25 @@
         </thead>
         <tbody>
             @foreach($categories as $category)
-            <tr>
-                <td>{{ $category->id }}</td>
-                <td>{{ $category->name }}</td>
-                <td>
-                    <!-- Edit Button with Pen Icon -->
-                    <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-success btn-sm">
-                        <i class="fas fa-pen"></i> Edit
-                    </a>
+                <tr>
+                    <td>{{ $category->id }}</td>
+                    <td>{{ $category->name }}</td>
+                    <td>
+                        <!-- Edit Button -->
+                        <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-pen"></i> Edit
+                        </a>
 
-                    <!-- Delete Button with Dustbin Icon -->
-                    <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this category?')">
-                            <i class="fas fa-trash"></i> Delete
-                        </button>
-                    </form>
-                </td>
-            </tr>
+                        <!-- Delete Button -->
+                        <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this category?')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
             @endforeach
         </tbody>
     </table>
@@ -44,100 +45,94 @@
     </div>
 </div>
 
-<!-- Custom CSS -->
+<!-- Dark Theme CSS -->
 <style>
-    /* General Container Styling */
+    body {
+        background-color: #121212;
+        color: #f1f1f1;
+        font-family: 'Poppins', sans-serif;
+    }
+
     .container {
         margin-top: 30px;
         max-width: 1200px;
-        padding: 20px;
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        background-color: #1e1e2f;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
-    /* Heading Styling */
     .page-title {
         text-align: center;
         font-size: 28px;
-        margin-bottom: 20px;
-        color: #333; /* Dark grey for title */
+        margin-bottom: 25px;
+        font-weight: 600;
+        color: #ffffff;
     }
 
-    /* Table Styling */
     table {
         width: 100%;
         border-collapse: collapse;
         margin-bottom: 20px;
+        color: #f1f1f1;
     }
 
-    table th, table td {
+    table th {
+        background-color: #343a40;
+        color: #ffffff;
+        padding: 14px;
+        font-weight: 600;
+    }
+
+    table td {
+        background-color: #2c2f4a;
+        border: 1px solid #444;
         padding: 12px;
         text-align: center;
-        border: 1px solid #ddd;
-        color: #555; /* Dark grey for table text */
     }
 
-    /* Table Header Styling */
-    table th {
-        background-color: #007bff;
-        color: white;
-        font-weight: bold;
-    }
-
-    /* Table Row Hover Effect */
     table tbody tr:hover {
-        background-color: #f5f5f5;
+        background-color: #3a3f5c;
     }
 
-    /* Action Button Styling */
     .btn {
         display: inline-flex;
         align-items: center;
         padding: 6px 12px;
-        margin: 0 5px;
+        margin: 0 4px;
         font-size: 14px;
         border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
+        color: white;
+        transition: all 0.3s ease-in-out;
     }
 
     .btn i {
         margin-right: 5px;
     }
 
-    /* Button Sizes */
     .btn-sm {
         font-size: 12px;
-        padding: 6px 12px;
+        padding: 5px 10px;
     }
 
-    /* Button Hover Effects */
-    .btn:hover {
-        opacity: 0.85;
-    }
-
-    /* Edit Button */
     .btn-success {
         background-color: #28a745;
-        color: white;
+        border: none;
     }
 
     .btn-success:hover {
         background-color: #218838;
     }
 
-    /* Delete Button */
     .btn-danger {
         background-color: #dc3545;
-        color: white;
+        border: none;
     }
 
     .btn-danger:hover {
         background-color: #c82333;
     }
 
-    /* Pagination Styling */
     .pagination {
         text-align: center;
         margin-top: 20px;
@@ -148,29 +143,25 @@
         margin: 0 4px;
         color: #007bff;
         text-decoration: none;
-        border: 1px solid #ddd;
+        border: 1px solid #444;
         border-radius: 4px;
+        background-color: #1e1e2f;
     }
 
-    .pagination a:hover {
-        background-color: #007bff;
-        color: white;
-    }
-
+    .pagination a:hover,
     .pagination .active {
         background-color: #007bff;
         color: white;
     }
 
-    /* Responsive Design */
     @media (max-width: 768px) {
         .container {
-            width: 100%;
-            padding: 10px;
+            padding: 15px;
         }
 
         table th, table td {
             font-size: 12px;
+            padding: 10px;
         }
 
         .btn-sm {

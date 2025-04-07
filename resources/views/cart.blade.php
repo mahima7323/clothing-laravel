@@ -1,13 +1,10 @@
-@include('layouts.header')
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Shopping Cart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
+        /* Your existing CSS — unchanged for brevity */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -26,9 +23,15 @@
         }
 
         h2 {
-            color: #333;
+            color: #2c3e50;
             font-size: 26px;
             margin-bottom: 20px;
+        }
+
+        .empty-cart {
+            color: #666;
+            font-size: 18px;
+            margin-top: 20px;
         }
 
         table {
@@ -45,7 +48,7 @@
         }
 
         th {
-            background-color: #3498db;
+            background-color: #2c3e50;
             color: white;
         }
 
@@ -116,52 +119,97 @@
             margin-top: 20px;
             font-weight: bold;
         }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
+
+    @include('layouts.header')
+
     <div class="container">
         <h2><i class="fa-solid fa-cart-shopping"></i> Shopping Cart</h2>
+
+        {{-- Flash Messages --}}
+        @if(session('success'))
+            <div class="alert-success">{{ session('success') }}</div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert-error">{{ session('error') }}</div>
+        @endif
 
         @if(empty($cart))
             <p class="empty-cart">Your cart is empty. <i class="fa-solid fa-box-open"></i></p>
         @else
             <table>
-                <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                    <th>Action</th>
-                </tr>
-                @foreach($cart as $id => $item)
-                    <tr id="cart-item-{{ $id }}">
-                        <td><img src="{{ $item['image'] }}" alt="{{ $item['name'] }}"></td>
-                        <td>{{ $item['name'] }}</td>
-                        <td>₹{{ number_format($item['price'], 2) }}</td>
-                        <td>
-                            <div class="quantity">
-                                <button class="decrease-qty" data-id="{{ $id }}">-</button>
-                                <input type="text" id="qty-{{ $id }}" value="{{ $item['quantity'] }}" readonly>
-                                <button class="increase-qty" data-id="{{ $id }}">+</button>
-                            </div>
-                        </td>
-                        <td id="total-{{ $id }}" data-price="{{ $item['price'] }}">₹{{ number_format($item['price'] * $item['quantity'], 2) }}</td>
-                        <td>
-                            <button class="btn-danger remove-from-cart" data-id="{{ $id }}">
-                                <i class="fa-solid fa-trash"></i> Remove
-                            </button>
-                        </td>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
                     </tr>
-                @endforeach
+                </thead>
+                <tbody>
+                    @foreach($cart as $item)
+                        <tr id="cart-item-{{ $item['id'] }}">
+                            <td>
+                            <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" width="80">
+
+                            </td>
+                            <td>{{ $item['name'] }}</td>
+                            <td>₹{{ number_format($item['price'], 2) }}</td>
+                            <td>
+                                <div class="quantity">
+                                    <button class="decrease-qty" data-id="{{ $item['id'] }}">-</button>
+                                    <input type="text" id="qty-{{ $item['id'] }}" value="{{ $item['quantity'] }}" readonly>
+                                    <button class="increase-qty" data-id="{{ $item['id'] }}">+</button>
+                                </div>
+                            </td>
+                            <td id="total-{{ $item['id'] }}" data-price="{{ $item['price'] }}">
+                                ₹{{ number_format($item['price'] * $item['quantity'], 2) }}
+                            </td>
+                            <td>
+                                <form action="{{ route('cart.remove') }}" method="POST" class="remove-form">
+                                    @csrf
+                                    <input type="hidden" name="id" value="{{ $item['id'] }}">
+                                    <button type="submit" class="btn-danger"><i class="fa-solid fa-trash"></i> Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
             </table>
+
             <p class="grand-total">Grand Total: <span id="grand-total">₹{{ number_format($grandTotal, 2) }}</span></p>
+
             <form id="order-form">
                 @csrf
                 <button type="submit" class="btn-success">Place Order</button>
             </form>
         @endif
     </div>
+
+    @include('layouts.footer')
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
         $(document).ready(function () {
@@ -186,43 +234,38 @@
                 qtyInput.val(newQty);
                 let newTotal = (price * newQty).toFixed(2);
                 $("#total-" + id).text("₹" + newTotal);
-
                 updateGrandTotal();
             });
 
-            $(document).on("click", ".remove-from-cart", function () {
-                let id = $(this).data("id");
-                $("#cart-item-" + id).fadeOut(300, function () {
-                    $(this).remove();
-                    updateGrandTotal();
+            $('.remove-form').submit(function (e) {
+                e.preventDefault();
+                let form = $(this);
+                $.post(form.attr('action'), form.serialize(), function (response) {
+                    if (response.success) {
+                        $('#cart-item-' + response.id).fadeOut(300, function () {
+                            $(this).remove();
+                            updateGrandTotal();
+                        });
+                    } else {
+                        alert('Oops!\nUnable to remove item.');
+                    }
+                }).fail(function () {
+                    alert('Oops!\nSomething went wrong.');
                 });
             });
 
             $("#order-form").submit(function (e) {
                 e.preventDefault();
-
-                $.ajax({
-                    url: "{{ route('order.place') }}",
-                    type: "POST",
-                    data: { _token: "{{ csrf_token() }}" },
-                    success: function (response) {
-                        if (response.success) {
-                            Swal.fire('Success!', response.message, 'success')
-                                .then(() => {
-                                    window.location.href = response.redirect;
-                                });
-                        } else {
-                            Swal.fire('Error!', response.message, 'error');
-                        }
-                    },
-                    error: function () {
-                        Swal.fire('Error!', 'Something went wrong. Please try again.', 'error');
+                $.post("{{ route('order.place') }}", { _token: "{{ csrf_token() }}" }, function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        window.location.href = response.redirect;
+                    } else {
+                        alert('Order failed!');
                     }
                 });
             });
         });
     </script>
-    
-    @include('layouts.footer')
 </body>
 </html>

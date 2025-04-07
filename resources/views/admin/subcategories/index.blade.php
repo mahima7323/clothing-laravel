@@ -2,10 +2,10 @@
 
 @section('content')
     <div class="container mt-5">
-        <h2>Subcategory List</h2>
+        <h2 class="page-title">Subcategory List</h2>
 
         <!-- Subcategory Table -->
-        <table class="table table-bordered table-striped table-hover">
+        <table class="table table-bordered table-hover">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -19,14 +19,14 @@
                     <tr>
                         <td>{{ $subcategory->id }}</td>
                         <td>{{ $subcategory->name }}</td>
-                        <td>{{ $subcategory->category->name }}</td> <!-- Display related category name -->
+                        <td>{{ $subcategory->category->name }}</td>
                         <td>
-                            <!-- Edit Link -->
-                            <a href="{{ route('admin.subcategories.edit', $subcategory->id) }}" class="btn btn-warning btn-sm">
+                            <!-- Edit Button (Green) -->
+                            <a href="{{ route('admin.subcategories.edit', $subcategory->id) }}" class="btn btn-edit-green btn-sm">
                                 <i class="fas fa-edit"></i> Edit
                             </a>
 
-                            <!-- Delete Form -->
+                            <!-- Delete Button -->
                             <form action="{{ route('admin.subcategories.destroy', $subcategory->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
@@ -46,83 +46,92 @@
         </div>
     </div>
 
-    <!-- Inline CSS -->
+    <!-- Dark Theme CSS -->
     <style>
-        /* Container for the table */
+        body {
+            background-color: #121212;
+            color: #f1f1f1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         .container {
+            background-color: #1e1e2f;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             max-width: 1200px;
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Heading Styling */
-        h2 {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #333; /* Changed font color to dark gray */
+        .page-title {
             text-align: center;
+            font-size: 28px;
+            margin-bottom: 25px;
+            font-weight: 600;
+            color: #ffffff;
         }
 
-        /* Table Styling */
         table {
             width: 100%;
             margin: 20px 0;
             border-collapse: collapse;
-        }
-
-        table th, table td {
-            text-align: center;
-            padding: 12px;
-            border: 1px solid #ddd;
+            color: #f1f1f1;
         }
 
         table th {
             background-color: #007bff;
-            color: white; /* White text for the table header */
+            color: #ffffff;
+            padding: 14px;
+            font-weight: bold;
         }
 
-        table tbody tr:nth-child(even) {
-            background-color: #f2f2f2;
+        table td {
+            background-color: #2c2f4a;
+            padding: 12px;
+            border: 1px solid #444;
+            text-align: center;
         }
 
-        table tbody td {
-            color: #555; /* Changed font color of the table body cells to a softer gray */
+        table tbody tr:hover {
+            background-color: #3a3f5c;
         }
 
-        /* Button Styling */
         .btn {
-            padding: 8px 16px;
+            padding: 6px 12px;
             font-size: 14px;
             border-radius: 4px;
-            text-align: center;
-            cursor: pointer;
-            text-decoration: none;
-        }
-
-        .btn-warning {
-            background-color: #ffc107;
-            border: none;
+            margin: 0 4px;
+            display: inline-flex;
+            align-items: center;
             color: white;
+            transition: 0.3s ease;
         }
 
-        .btn-warning:hover {
-            background-color: #e0a800;
+        .btn-sm {
+            font-size: 12px;
+        }
+
+        .btn-edit-green {
+            background-color: #28a745;
+            border: none;
+        }
+
+        .btn-edit-green:hover {
+            background-color: #218838;
         }
 
         .btn-danger {
             background-color: #dc3545;
             border: none;
-            color: white;
         }
 
         .btn-danger:hover {
             background-color: #c82333;
         }
 
-        /* Pagination Styling */
+        .btn i {
+            margin-right: 5px;
+        }
+
         .pagination {
             text-align: center;
             margin-top: 20px;
@@ -133,27 +142,29 @@
             margin: 0 4px;
             background-color: #007bff;
             color: white;
-            text-decoration: none;
             border-radius: 4px;
+            text-decoration: none;
+            border: 1px solid transparent;
         }
 
-        .pagination a:hover {
+        .pagination a:hover,
+        .pagination .active {
             background-color: #0056b3;
         }
 
-        /* Responsive Styling */
         @media (max-width: 768px) {
             .container {
-                width: 100%;
-                padding: 10px;
+                padding: 15px;
             }
 
             table th, table td {
                 font-size: 12px;
+                padding: 10px;
             }
 
             .btn {
                 font-size: 12px;
+                padding: 5px 10px;
             }
 
             .pagination a {

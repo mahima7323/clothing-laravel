@@ -36,30 +36,33 @@ class AdminController extends Controller
     {
         return view('admin.login');
     }
-
-    // Handle the admin login
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string|min:6',
-        ]);
-
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) { // Default auth guard
-            session()->flash('success', 'Login Successful! Welcome to the Admin Dashboard.');
-            return redirect()->route('admin.dashboard');
-        } else {
-            session()->flash('error', 'Invalid Credentials! Please try again.');
-            return redirect()->back();
+    
+        // Handle the admin login
+        public function login(Request $request)
+        {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required|string|min:6',
+            ]);
+        
+            $credentials = $request->only('email', 'password');
+        
+            if (Auth::guard('admin')->attempt($credentials)) {
+                session()->flash('success', 'Login Successful! Welcome to the Admin Dashboard.');
+                return redirect()->route('admin.dashboard');
+            } else {
+                session()->flash('error', 'Invalid Credentials! Please try again.');
+                return redirect()->back();
+            }
         }
-    }
+        
+
 
     // Admin logout
     public function logout()
     {
-        Auth::logout(); // Use default guard
+        Auth::guard('admin')->logout();
         return redirect()->route('admin.login')->with('success', 'Logged out successfully.');
     }
+    
 }

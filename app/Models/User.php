@@ -28,4 +28,10 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function wishlist()
+{
+    return $this->hasMany(Wishlist::class);
+}
+
 }

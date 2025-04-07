@@ -1,47 +1,63 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Wishlist;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 
 class WishlistController extends Controller
 {
-    public function addToWishlist(Request $request)
+    // Show all wishlist items for the logged-in user
+    public function index()
     {
-        $wishlist = session()->get('wishlist', []);
-
-        // Check if product is already in wishlist
-        if (isset($wishlist[$request->id])) {
-            return response()->json(['message' => 'Product is already in wishlist!']);
-        }
-
-        // Add product to wishlist
-        $wishlist[$request->id] = [
-            "name" => $request->name,
-            "price" => $request->price,
-            "image" => $request->image
-        ];
-
-        session()->put('wishlist', $wishlist);
-        session()->save();
-        
-        return response()->json(['message' => 'Product added to wishlist successfully!']);
-    }
-
-    public function viewWishlist()
-    {
-        $wishlist = session()->get('wishlist', []);
+        $wishlist = Wishlist::where('user_id', Auth::id())->with('product')->get();
         return view('wishlist', compact('wishlist'));
     }
 
+    // Add a product to wishlist
+    public function addToWishlist(Request $request)
+    {
+        Wishlist::firstOrCreate([
+            'user_id' => Auth::id(),
+            'product_id' => $request->id
+        ]);
+
+        return response()->json(['message' => 'Added to wishlist!']);
+    }
+
+    // Remove a product from wishlist
     public function removeFromWishlist(Request $request)
     {
-        $wishlist = session()->get('wishlist', []);
+        Wishlist::where('user_id', Auth::id())
+                ->where('product_id', $request->id)
+                ->delete();
 
-        if (isset($wishlist[$request->id])) {
-            unset($wishlist[$request->id]);
-            session()->put('wishlist', $wishlist);
+        return redirect()->back()->with('success', 'Removed from wishlist!');
+    }
+
+    // ✅ Add product from wishlist to cart
+    public function addToCartFromWishlist(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+
+        $cart = session()->get('cart', []);
+
+        if (isset($cart[$id])) {
+            return redirect()->back()->with('warning', 'Item is already in the cart.');
         }
 
-        return redirect()->route('wishlist.view')->with('success', 'Product removed from wishlist');
+        // Add to cart session
+        $cart[$id] = [
+            "name" => $product->name,
+            "quantity" => 1,
+            "price" => $product->price,
+            "image" => $product->image,
+        ];
+
+        session()->put('cart', $cart);
+
+        return redirect()->back()->with('success', 'Product added to cart successfully!');
     }
 }

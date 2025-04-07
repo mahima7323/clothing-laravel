@@ -1,5 +1,3 @@
-@include('layouts.header')
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,7 +6,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #ffffff;
             margin: 0;
             padding: 20px;
         }
@@ -24,21 +22,15 @@
         }
 
         h2 {
-            color: #333;
+            color: #2c3e50;
             font-size: 26px;
             margin-bottom: 20px;
         }
 
-        .message-box {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #ff9800;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-            display: none;
+        .empty-wishlist {
+            color: #666;
+            font-size: 18px;
+            margin-top: 20px;
         }
 
         table {
@@ -55,98 +47,124 @@
         }
 
         th {
-            background-color: #ff9800;
+            background-color: #2c3e50;
             color: white;
         }
 
         td img {
             width: 50px;
+            height: auto;
             border-radius: 5px;
         }
 
         .btn-danger {
-            background-color: #e74c3c;
+            background-color: #c0392b;
             color: white;
             padding: 8px 12px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.3s;
+            margin-right: 5px;
         }
 
         .btn-danger:hover {
-            background-color: #c0392b;
+            background-color: #96281b;
         }
 
-        .empty-wishlist {
-            color: #777;
-            font-size: 18px;
-            margin-top: 20px;
+        .btn-dark {
+            background-color: #2c3e50;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .btn-dark:hover {
+            background-color: #1a252f;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
+
+    @include('layouts.header') {{-- ✅ Move here after <body> --}}
+
     <div class="container">
         <h2><i class="fa-solid fa-heart"></i> Wishlist</h2>
 
-        <div class="message-box" id="wishlist-message"></div>
+        {{-- Flash Messages --}}
+        @if(session('success'))
+            <div class="alert-success">{{ session('success') }}</div>
+        @endif
 
-        @if(empty($wishlist))
+        @if(session('warning'))
+            <div class="alert-warning">{{ session('warning') }}</div>
+        @endif
+
+        @if($wishlist->isEmpty())
             <p class="empty-wishlist">Your wishlist is empty. <i class="fa-solid fa-box-open"></i></p>
         @else
             <table>
-                <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Action</th>
-                </tr>
-                @foreach($wishlist as $id => $item)
+                <thead>
                     <tr>
-                        <td><img src="{{ $item['image'] }}" alt="{{ $item['name'] }}"></td>
-                        <td>{{ $item['name'] }}</td>
-                        <td>₹{{ number_format($item['price'], 2) }}</td>
-                        
-                        <td>
-                            <form action="{{ route('wishlist.remove') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="id" value="{{ $id }}">
-                                <button class="btn-danger"><i class="fa-solid fa-trash"></i> Remove</button>
-                            </form>
-                        </td>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Action</th>
                     </tr>
-                @endforeach
+                </thead>
+                <tbody>
+                    @foreach($wishlist as $item)
+                        @if($item->product)
+                            <tr>
+                                <td>
+                                <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}">
+
+
+                                </td>
+                                <td>{{ $item->product->name }}</td>
+                                <td>₹{{ number_format($item->product->price, 2) }}</td>
+                                <td>
+                                    <form action="{{ route('wishlist.remove') }}" method="POST" style="display:inline-block;">
+                                        @csrf
+                                        <input type="hidden" name="id" value="{{ $item->product->id }}">
+                                        <button class="btn-danger"><i class="fa-solid fa-trash"></i> Remove</button>
+                                    </form>
+
+                                    <form action="{{ route('cart.add.from.wishlist', ['id' => $item->product->id]) }}" method="POST" style="display:inline-block;">
+                                        @csrf
+                                        <button type="submit" class="btn-dark">
+                                            <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        @endif
+                    @endforeach
+                </tbody>
             </table>
         @endif
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function() {
-            $(".add-to-wishlist").click(function() {
-                var product_id = $(this).data("id");
-                var name = $(this).data("name");
-                var price = $(this).data("price");
-                var image = $(this).data("image");
+    @include('layouts.footer') {{-- ✅ Should be inside <body> too --}}
 
-                $.ajax({
-                    url: "{{ route('wishlist.add') }}",
-                    method: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        id: product_id,
-                        name: name,
-                        price: price,
-                        image: image
-                    },
-                    success: function(response) {
-                        $("#wishlist-message").text(response.message).fadeIn().delay(2000).fadeOut();
-                    }
-                });
-            });
-        });
-    </script>
 </body>
 </html>
-
-@include('layouts.footer')

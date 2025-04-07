@@ -126,7 +126,8 @@
     </div>
     
     <a href="{{ route('admin.users') }}">User Management</a>
-    <a href="#">Orders</a>
+    <a href="{{ route('admin.orders.index') }}" class="{{ request()->is('admin/orders') ? 'active' : '' }}">Orders</a>
+
     <a href="#">Reports</a>
     <a href="#">Settings</a>
     

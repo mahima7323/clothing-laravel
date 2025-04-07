@@ -3,89 +3,130 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Cart;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
     // Add product to cart
     public function addToCart(Request $request)
     {
-        $cart = session()->get('cart', []);
+        $userId = Auth::id();
 
-        if (isset($cart[$request->id])) {
-            $cart[$request->id]['quantity'] += 1;
-        } else {
-            $cart[$request->id] = [
-                "name" => $request->name,
-                "price" => (float) $request->price,
-                "image" => $request->image,
-                "quantity" => 1
-            ];
+        if (!$userId) {
+            return response()->json([
+                'message' => 'User is not authenticated. Please log in to add items to the cart.'
+            ], 401);
         }
 
-        session()->put('cart', $cart);
-        $grandTotal = $this->calculateGrandTotal($cart);
-        session()->put('grand_total', $grandTotal);
+        $cartItem = Cart::where('user_id', $userId)
+                        ->where('product_id', $request->id)
+                        ->first();
+
+        if ($cartItem) {
+            return response()->json([
+                'message' => 'Item already in cart.'
+            ]);
+        }
+
+        Cart::create([
+            'user_id' => $userId,
+            'product_id' => $request->id,
+            'quantity' => 1,
+        ]);
 
         return response()->json([
-            'message' => 'Product added to cart successfully!',
-            'grand_total' => number_format($grandTotal, 2, '.', '')
+            'message' => 'Product added to cart successfully!'
         ]);
     }
 
-    // View Cart Page
-    public function viewCart()
+    // Show Cart Page
+    public function cartPage()
     {
-        $cart = session()->get('cart', []);
-        $grandTotal = $this->calculateGrandTotal($cart);
+        $userId = auth()->id();
+
+        $cartItems = Cart::with('product')
+                        ->where('user_id', $userId)
+                        ->get();
+
+        $cart = [];
+        $grandTotal = 0;
+
+        foreach ($cartItems as $item) {
+            $product = $item->product;
+
+            if ($product) {
+                $total = $product->price * $item->quantity;
+                $grandTotal += $total;
+
+                $cart[] = [
+                    'id' => $item->id,
+                    'name' => $product->name,
+                    'price' => $product->price,
+                    'quantity' => $item->quantity,
+                    'image' => asset('storage/' . $product->image),
+ // ✅ Corrected image path
+                ];
+            }
+        }
 
         return view('cart', compact('cart', 'grandTotal'));
     }
 
-    // Remove product from cart
-    public function removeFromCart(Request $request)
+    // Remove item from cart
+    public function remove(Request $request)
     {
-        $cart = session()->get('cart', []);
+        $id = $request->id;
 
-        if (isset($cart[$request->id])) {
-            unset($cart[$request->id]);
-            session()->put('cart', $cart);
+        $cartItem = Cart::find($id);
+
+        if ($cartItem) {
+            $cartItem->delete();
+
+            return response()->json([
+                'success' => true,
+                'id' => $id,
+                'message' => 'Item removed from cart.'
+            ]);
         }
 
-        $grandTotal = $this->calculateGrandTotal($cart);
-        session()->put('grand_total', $grandTotal);
+        return response()->json([
+            'success' => false,
+            'message' => 'Unable to remove item.'
+        ]);
+    }
+
+    // Update cart quantity
+    public function updateCart(Request $request)
+    {
+        $userId = Auth::id();
+
+        $cartItem = Cart::where('user_id', $userId)
+                        ->where('product_id', $request->id)
+                        ->first();
+
+        if ($cartItem) {
+            $cartItem->quantity = max(1, (int) $request->quantity);
+            $cartItem->save();
+        }
+
+        $grandTotal = $this->calculateGrandTotal($userId);
 
         return response()->json([
-            'message' => 'Product removed successfully!',
+            'new_total' => number_format($cartItem->quantity * $cartItem->product->price, 2, '.', ''),
             'grand_total' => number_format($grandTotal, 2, '.', '')
         ]);
     }
 
-    // Update quantity in cart
-    public function updateCart(Request $request)
+    // Calculate grand total
+    private function calculateGrandTotal($userId)
     {
-        $cart = session()->get('cart', []);
-
-        if (isset($cart[$request->id])) {
-            $cart[$request->id]['quantity'] = max(1, (int) $request->quantity);
-            session()->put('cart', $cart);
-        }
-
-        $grandTotal = $this->calculateGrandTotal($cart);
-        session()->put('grand_total', $grandTotal);
-
-        return response()->json([
-            'new_total' => number_format($cart[$request->id]['quantity'] * $cart[$request->id]['price'], 2, '.', ''),
-            'grand_total' => number_format($grandTotal, 2, '.', '') // **This is now updated correctly**
-        ]);
-    }
-
-    // Calculate Grand Total
-    private function calculateGrandTotal($cart)
-    {
-        $total = 0;
-        foreach ($cart as $item) {
-            $total += ((float) $item['price'] * (int) $item['quantity']);
-        }
-        return $total;
+        return Cart::where('user_id', $userId)
+                   ->with('product')
+                   ->get()
+                   ->sum(function ($item) {
+                       return $item->product->price * $item->quantity;
+                   });
     }
 }

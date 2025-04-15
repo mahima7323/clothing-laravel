@@ -72,8 +72,8 @@
 <div class="container mt-5">
     <h2>Add Product</h2>
     <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
-    @csrf
-  
+        @csrf
+
         <!-- Category Selection -->
         <div class="form-group">
             <label for="category">Category</label>
@@ -128,19 +128,18 @@
     </form>
 </div>
 
+<!-- Category to Subcategory Dynamic Script -->
 <script>
     document.getElementById('category').addEventListener('change', function() {
         var categoryId = this.value;
         var subcategorySelect = document.getElementById('subcategory_id');
-        subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>'; // Reset the subcategory dropdown
+        subcategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
 
         if (categoryId) {
-            // Make a GET request to fetch subcategories
             fetch('/admin/subcategories/' + categoryId)
                 .then(response => response.json())
                 .then(data => {
                     if (data.length > 0) {
-                        // Populate subcategories if available
                         data.forEach(function(subcategory) {
                             var option = document.createElement('option');
                             option.value = subcategory.id;
@@ -148,16 +147,29 @@
                             subcategorySelect.appendChild(option);
                         });
                     } else {
-                        // If no subcategories are found, display a message
                         subcategorySelect.innerHTML = '<option value="">No subcategories available</option>';
                     }
                 })
                 .catch(error => {
-                    // console.error('Error loading subcategories:', error);
                     subcategorySelect.innerHTML = '<option value="">Error loading subcategories</option>';
                 });
         }
     });
 </script>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Show success popup if session has success message -->
+@if(session('success'))
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: '{{ session("success") }}',
+            confirmButtonColor: '#4CAF50'
+        });
+    </script>
+@endif
 
 @endsection

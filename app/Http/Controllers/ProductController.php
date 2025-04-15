@@ -48,7 +48,9 @@ class ProductController extends Controller
             'image' => $imagePath,
         ]);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product added successfully!');
+        //return redirect()->route('admin.products.index')->with('success', 'Product added successfully!');
+        return redirect()->back()->with('success', 'Product added successfully!');
+
     }
 
     // Show edit form

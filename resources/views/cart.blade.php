@@ -231,10 +231,25 @@
 
                 if (newQty < 1) return;
 
-                qtyInput.val(newQty);
-                let newTotal = (price * newQty).toFixed(2);
-                $("#total-" + id).text("₹" + newTotal);
-                updateGrandTotal();
+                // Update quantity in the database via AJAX
+                $.ajax({
+                    url: "{{ route('cart.update') }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        cart_id: id,
+                        quantity: newQty
+                    },
+                    success: function (response) {
+                        qtyInput.val(newQty);
+                        let newTotal = (price * newQty).toFixed(2);
+                        $("#total-" + id).text("₹" + newTotal);
+                        updateGrandTotal();
+                    },
+                    error: function () {
+                        alert("Failed to update quantity. Please try again.");
+                    }
+                });
             });
 
             $('.remove-form').submit(function (e) {
@@ -242,8 +257,11 @@
                 let form = $(this);
                 $.post(form.attr('action'), form.serialize(), function (response) {
                     if (response.success) {
+                        // Remove the cart item row
                         $('#cart-item-' + response.id).fadeOut(300, function () {
                             $(this).remove();
+
+                            // Update the grand total after removing the item
                             updateGrandTotal();
                         });
                     } else {

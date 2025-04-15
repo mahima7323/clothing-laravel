@@ -3,6 +3,7 @@
 <head>
     <title>Wishlist</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -136,24 +137,23 @@
                         @if($item->product)
                             <tr>
                                 <td>
-                                <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}">
-
-
+                                    <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}">
                                 </td>
                                 <td>{{ $item->product->name }}</td>
                                 <td>₹{{ number_format($item->product->price, 2) }}</td>
                                 <td>
+                                    <button class="btn-dark add-to-cart" 
+                                            data-id="{{ $item->product->id }}" 
+                                            data-name="{{ $item->product->name }}" 
+                                            data-price="{{ $item->product->price }}" 
+                                            data-image="{{ asset('storage/' . $item->product->image) }}">
+                                        <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                                    </button>
+
                                     <form action="{{ route('wishlist.remove') }}" method="POST" style="display:inline-block;">
                                         @csrf
                                         <input type="hidden" name="id" value="{{ $item->product->id }}">
                                         <button class="btn-danger"><i class="fa-solid fa-trash"></i> Remove</button>
-                                    </form>
-
-                                    <form action="{{ route('cart.add.from.wishlist', ['id' => $item->product->id]) }}" method="POST" style="display:inline-block;">
-                                        @csrf
-                                        <button type="submit" class="btn-dark">
-                                            <i class="fa-solid fa-cart-plus"></i> Add to Cart
-                                        </button>
                                     </form>
                                 </td>
                             </tr>
@@ -166,5 +166,34 @@
 
     @include('layouts.footer') {{-- ✅ Should be inside <body> too --}}
 
+    <script>
+        $(document).ready(function() {
+            // Add to Cart
+            $(document).on("click", ".add-to-cart", function() {
+                var product_id = $(this).data("id");
+                var name = $(this).data("name");
+                var price = $(this).data("price");
+                var image = $(this).data("image");
+
+                $.ajax({
+                    url: "{{ route('cart.add') }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        id: product_id,
+                        name: name,
+                        price: price,
+                        image: image
+                    },
+                    success: function(response) {
+                        alert(response.message);
+                    },
+                    error: function(xhr) {
+                        alert("Error: " + xhr.responseJSON.message);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

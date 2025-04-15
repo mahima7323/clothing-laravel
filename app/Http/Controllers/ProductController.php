@@ -1,31 +1,29 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Subcategory;
-use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    // Display the list of products (Admin Side)
+    // Display products in admin panel
     public function index()
     {
         $products = Product::with('category', 'subcategory')->get();
-        return view('admin.products.index', compact('products')); 
+        return view('admin.products.index', compact('products'));
     }
 
-    // Show the product creation form
+    // Show product creation form
     public function create()
     {
-        // Optionally, pass any data needed, such as categories, etc.
         $categories = Category::all();
         return view('admin.products.create', compact('categories'));
     }
-    
 
-    // Store a new product
+    // Store product
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -53,16 +51,17 @@ class ProductController extends Controller
         return redirect()->route('admin.products.index')->with('success', 'Product added successfully!');
     }
 
-    // Show the product editing form
+    // Show edit form
     public function edit($id)
     {
         $product = Product::findOrFail($id);
         $categories = Category::all();
-        $subcategories = Subcategory::where('category_id', $product->category_id)->get();  // Ensure correct subcategories
-        return view('admin.products.edit', compact('product', 'categories', 'subcategories')); 
+        $subcategories = Subcategory::where('category_id', $product->category_id)->get();
+
+        return view('admin.products.edit', compact('product', 'categories', 'subcategories'));
     }
 
-    // Update the product
+    // Update product
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
@@ -95,7 +94,7 @@ class ProductController extends Controller
         return redirect()->route('admin.products.index')->with('success', 'Product updated successfully!');
     }
 
-    // Delete the product
+    // Delete product
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
@@ -104,67 +103,92 @@ class ProductController extends Controller
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully!');
     }
 
-    // Get subcategories by category_id (for dynamic loading)
-   
+    // Fetch subcategories dynamically for admin panel
     public function getSubcategories($category_id)
     {
         $subcategories = Subcategory::where('category_id', $category_id)->get();
         return response()->json($subcategories);
     }
 
-    public function userProductList()
-    {
-        $products = Product::all(); // દરેક પ્રોડક્ટ્સ લાવો
-        return view('product_list', compact('products')); // product_list.blade.php માં ડેટા મોકલો
+    // Show user product list with filter
+   // In ProductController
+
+// Fetch products by subcategory for the user product list
+public function userProductList(Request $request)
+{
+    $query = Product::with('category', 'subcategory');
+
+    // Filter by category if category_id is present in the request
+    if ($request->filled('category_id')) {
+        $query->where('category_id', $request->category_id);
     }
-// -----------------------------------------------------------------------------------------
 
-    //Show products by category name
-    // public function showCategoryProducts($categoryName)
-    // {
-    //     try {
-    //         // Log the received category name
-    //         Log::info('Received category name: ' . $categoryName);
-    
-    //         // Fetch category (case-insensitive)
-    //         $category = DB::table('categories')
-    //             ->whereRaw('LOWER(name) = ?', [strtolower($categoryName)])
-    //             ->first();
-    
-    //         if (!$category) {
-    //             // Log if the category is not found
-    //             Log::info('❌ Category not found: ' . $categoryName);
-    //             return back()->with('error', 'Category not found.');
-    //         }
-    
-    //         // Log the category found
-    //         Log::info('✅ Category found! ID: ' . $category->id);
-    
-    //         // Fetch products for this category
-    //         $products = DB::table('products')
-    //             ->where('category_id', $category->id)
-    //             ->get();
-    
-    //         // Log the products fetched (convert to JSON string for readability)
-    //         Log::info('Products for Category ' . $categoryName . ': ' . json_encode($products->toArray(), JSON_PRETTY_PRINT));
-    
-    //         // If no products are found, log it
-    //         if ($products->isEmpty()) {
-    //             Log::info('🛍 No products found for Category ' . $categoryName);
-    //         }
-    
-    //         // Return the view with products and category name
-    //         return view("user_product.$categoryName", compact('products', 'categoryName'));
-    
-    //     } catch (\Exception $e) {
-    //         // Log the error if any exception occurs
-    //         Log::error('Error occurred while fetching products for category ' . $categoryName . ': ' . $e->getMessage());
-    //         return back()->with('error', 'An error occurred while fetching products.');
-    //     }
-    // }
-    
-    
+    // Filter by subcategory if subcategory_id is present in the request
+    if ($request->filled('subcategory_id')) {
+        $query->where('subcategory_id', $request->subcategory_id);
+    }
 
-        
+    // Get filtered products with pagination
+    $products = $query->paginate(10);
 
+    // Fetch all categories and subcategories to populate the filters
+    $categories = Category::all();
+    $subcategories = Subcategory::all();
+
+    return view('product_list', compact('products', 'categories', 'subcategories'));
+}
+
+public function filterBySubcategory(Request $request)
+{
+    $query = Product::query();
+
+    if ($request->filled('category_id')) {
+        $query->where('category_id', $request->category_id);
+    }
+
+    if ($request->filled('subcategory_id')) {
+        $query->where('subcategory_id', $request->subcategory_id);
+    }
+
+    $products = $query->get()->map(function ($product) {
+        return [
+            'id' => $product->id,
+            'name' => $product->name,
+            'description' => $product->description,
+            'price' => $product->price,
+            'image' => asset('storage/' . $product->image),
+        ];
+    });
+
+    return response()->json(['products' => $products]);
+}
+
+public function addToCart(Request $request)
+{
+    // Validate product ID
+    $product = Product::findOrFail($request->product_id);
+
+    // Fetch current cart from session, if exists
+    $cart = session()->get('cart', []);
+
+    // Check if product already exists in cart
+    if(isset($cart[$product->id])) {
+        $cart[$product->id]['quantity']++;
+    } else {
+        // Add new product to cart
+        $cart[$product->id] = [
+            'name' => $product->name,
+            'quantity' => 1,
+            'price' => $product->price,
+            'image' => asset('storage/' . $product->image),
+        ];
+    }
+
+    // Update session with new cart
+    session()->put('cart', $cart);
+
+    return response()->json(['success' => 'Product added to cart!']);
+}
+
+    
 }

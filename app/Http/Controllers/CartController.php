@@ -61,12 +61,11 @@ class CartController extends Controller
                 $grandTotal += $total;
 
                 $cart[] = [
-                    'id' => $item->id,
+                    'id' => $item->id, // cart item ID
                     'name' => $product->name,
                     'price' => $product->price,
                     'quantity' => $item->quantity,
                     'image' => asset('storage/' . $product->image),
- // ✅ Corrected image path
                 ];
             }
         }
@@ -87,7 +86,8 @@ class CartController extends Controller
             return response()->json([
                 'success' => true,
                 'id' => $id,
-                'message' => 'Item removed from cart.'
+                'message' => 'Item removed from cart.',
+                'grand_total' => number_format($this->calculateGrandTotal(Auth::id()), 2, '.', '')
             ]);
         }
 
@@ -97,26 +97,29 @@ class CartController extends Controller
         ]);
     }
 
-    // Update cart quantity
+    // ✅ Updated: Update cart quantity using cart_id
     public function updateCart(Request $request)
     {
-        $userId = Auth::id();
+        $cartItem = Cart::find($request->cart_id); // use cart item id
 
-        $cartItem = Cart::where('user_id', $userId)
-                        ->where('product_id', $request->id)
-                        ->first();
-
-        if ($cartItem) {
+        if ($cartItem && $cartItem->user_id === Auth::id()) {
+            // Update the quantity in the database
             $cartItem->quantity = max(1, (int) $request->quantity);
             $cartItem->save();
+
+            // Recalculate the grand total
+            $grandTotal = $this->calculateGrandTotal(Auth::id());
+
+            return response()->json([
+                'new_total' => number_format($cartItem->quantity * $cartItem->product->price, 2, '.', ''),
+                'grand_total' => number_format($grandTotal, 2, '.', ''),
+                'message' => 'Cart updated successfully!'
+            ]);
         }
 
-        $grandTotal = $this->calculateGrandTotal($userId);
-
         return response()->json([
-            'new_total' => number_format($cartItem->quantity * $cartItem->product->price, 2, '.', ''),
-            'grand_total' => number_format($grandTotal, 2, '.', '')
-        ]);
+            'error' => 'Cart item not found or unauthorized.'
+        ], 404);
     }
 
     // Calculate grand total

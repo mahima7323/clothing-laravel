@@ -1,4 +1,4 @@
-<!-- @extends('layouts.admin_header')
+ <!-- @extends('layouts.admin_header')
 
 @section('content')
 <div class="container">
@@ -107,4 +107,4 @@
         font-weight: bold;
     }
 </style>
-@endsection -->
+@endsection  -->

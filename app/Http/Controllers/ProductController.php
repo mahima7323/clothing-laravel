@@ -18,6 +18,14 @@ class ProductController extends Controller
         return view('admin.products.index', compact('products'));
     }
     
+    
+
+    public function show($id)
+    {
+        $product = Product::with('category', 'subcategory')->findOrFail($id);
+        return view('show', compact('product')); 
+    }
+
 
     // Show product creation form
     public function create()

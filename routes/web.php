@@ -15,6 +15,14 @@ use App\Http\Controllers\AdminDashboardController;
 Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 Route::get('/admin/orders', [OrderController::class, 'index'])->name('admin.orders.index');
 
+
+Route::get('/product/{id}', function ($id) {
+    $product = \App\Models\Product::findOrFail($id);
+    return view('show', compact('product'));
+});
+//Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('add.to.cart');
+
+
 // Admin Authentication
 Route::get('/admin/login', [AdminController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminController::class, 'login'])->name('admin.login.post');

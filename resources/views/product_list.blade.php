@@ -101,8 +101,11 @@
         <div class="product-grid">
             @foreach($products as $product)
                 <div class="product-card">
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
-                    <h5>{{ $product->name }}</h5>
+                        <a href="{{ url('product/' . $product->id) }}">
+                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                            <h5>{{ $product->name }}</h5>
+                        </a>
+
                     <p>{{ $product->description }}</p>
                     <div class="price">₹{{ number_format($product->price, 2) }}</div>
                     <div class="d-flex justify-content-between">
@@ -153,8 +156,10 @@
                         response.products.forEach(product => {
                             productGrid.append(`
                                 <div class="product-card">
-                                    <img src="${product.image}" alt="${product.name}">
-                                    <h5>${product.name}</h5>
+                                    <a href="/product/${product.id}" style="text-decoration: none;">
+                                        <img src="${product.image}" alt="${product.name}">
+                                        <h5>${product.name}</h5>
+                                    </a>
                                     <p>${product.description}</p>
                                     <div class="price">₹${product.price}</div>
                                     <div class="d-flex justify-content-between">

@@ -2,93 +2,140 @@
 
 @section('content')
 
+<div class="container">
+    <h2 class="page-title">Product List</h2>
+
+    <!-- Product Table -->
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Image</th> <!-- New Column for Image -->
+                <th>Name</th>
+                <th>Category</th>
+                <th>Subcategory</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($products as $product)
+                <tr>
+                    <td>{{ $product->id }}</td>
+                    <td>
+                        <!-- Display Image if exists -->
+                        @if($product->image)
+                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" style="width: 50px; height: auto;">
+                        @else
+                            No Image
+                        @endif
+                    </td>
+                    <td>{{ $product->name }}</td>
+                    <td>{{ $product->category->name }}</td>
+                    <td>{{ $product->subcategory->name }}</td>
+                    <td>{{ number_format($product->price, 2) }}</td>
+                    <td>
+                        <!-- Edit Button -->
+                        <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-success btn-sm">
+                            <i class="fas fa-pen"></i> Edit
+                        </a>
+
+                        <!-- Delete Button -->
+                        <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this product?')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        {{ $products->links() }}
+    </div>
+</div>
+
+<!-- Dark Theme CSS -->
 <style>
     body {
         background-color: #121212;
-        font-family: 'Poppins', sans-serif;
         color: #f1f1f1;
+        font-family: 'Poppins', sans-serif;
     }
 
     .container {
+        margin-top: 30px;
         max-width: 1200px;
-        margin: auto;
         padding: 30px;
-        border-radius: 10px;
         background-color: #1e1e2f;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
-    h2 {
+    .page-title {
+        text-align: center;
+        font-size: 28px;
+        margin-bottom: 25px;
         font-weight: 600;
         color: #ffffff;
-        text-align: center;
-        margin-bottom: 30px;
     }
 
-    .btn-primary {
-        background-color: #007bff;
-        border: none;
-        padding: 10px 20px;
-        font-weight: 500;
-        border-radius: 6px;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
-
-    .alert-success {
-        text-align: center;
-        padding: 12px;
-        border-radius: 5px;
-        font-weight: bold;
-        background-color: #28a745;
-        color: white;
-        border: 1px solid #28a745;
-    }
-
-    .product-table {
+    table {
         width: 100%;
-        border-collapse: separate;
-        border-spacing: 0 10px;
+        border-collapse: collapse;
+        margin-bottom: 20px;
         color: #f1f1f1;
     }
 
-    .product-table th {
+    table th {
         background-color: #343a40;
-        color: #f8f9fa;
-        padding: 12px;
-        text-align: center;
-        border-radius: 5px 5px 0 0;
+        color: #ffffff;
+        padding: 14px;
+        font-weight: 600;
     }
 
-    .product-table td {
+    table td {
         background-color: #2c2f4a;
+        border: 1px solid #444;
         padding: 12px;
         text-align: center;
-        border: 1px solid #3e415a;
     }
 
-    .product-table img {
-        border-radius: 5px;
-        width: 60px;
-        height: 60px;
-        object-fit: cover;
+    table tbody tr:hover {
+        background-color: #3a3f5c;
     }
 
     .btn {
-        padding: 6px 14px;
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        margin: 0 4px;
         font-size: 14px;
-        border-radius: 6px;
+        border-radius: 4px;
         color: white;
+        transition: all 0.3s ease-in-out;
     }
 
-    .btn-edit-green {
+    .btn i {
+        margin-right: 5px;
+    }
+
+    .btn-sm {
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+
+    .btn-success {
         background-color: #28a745;
         border: none;
     }
 
-    .btn-edit-green:hover {
+    .btn-success:hover {
         background-color: #218838;
     }
 
@@ -101,82 +148,46 @@
         background-color: #c82333;
     }
 
+    .pagination {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .pagination a {
+        padding: 8px 16px;
+        margin: 0 4px;
+        color: #007bff;
+        text-decoration: none;
+        border: 1px solid #444;
+        border-radius: 4px;
+        background-color: #1e1e2f;
+    }
+
+    .pagination a:hover,
+    .pagination .active {
+        background-color: #007bff;
+        color: white;
+    }
+
     @media (max-width: 768px) {
-        .product-table, .product-table thead, .product-table tbody, .product-table th, .product-table td, .product-table tr {
-            display: block;
+        .container {
+            padding: 15px;
         }
 
-        .product-table tr {
-            margin-bottom: 15px;
+        table th, table td {
+            font-size: 12px;
+            padding: 10px;
         }
 
-        .product-table td {
-            text-align: right;
-            padding-left: 50%;
-            position: relative;
+        .btn-sm {
+            font-size: 10px;
+            padding: 4px 8px;
         }
 
-        .product-table td::before {
-            content: attr(data-label);
-            position: absolute;
-            left: 10px;
-            text-align: left;
-            font-weight: bold;
-            color: #aaa;
+        .pagination a {
+            padding: 6px 12px;
         }
     }
 </style>
-
-<div class="container">
-    <h2>Product List</h2>
-
-    <a href="{{ route('admin.products.create') }}" class="btn btn-primary mb-3">+ Add Product</a>
-
-    @if (session('success'))
-        <div class="alert-success mb-3">{{ session('success') }}</div>
-    @endif
-
-    <div class="table-responsive">
-        <table class="product-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Category</th>
-                    <th>Subcategory</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Image</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($products as $product)
-                    <tr>
-                        <td data-label="ID">{{ $product->id }}</td>
-                        <td data-label="Category">{{ $product->category->name }}</td>
-                        <td data-label="Subcategory">{{ $product->subcategory->name }}</td>
-                        <td data-label="Name">{{ $product->name }}</td>
-                        <td data-label="Price">₹{{ number_format($product->price, 2) }}</td>
-                        <td data-label="Quantity">{{ $product->quantity }}</td>
-                        <td data-label="Image">
-                            @if($product->image)
-                                <img src="{{ asset("storage/{$product->image}") }}" alt="Product Image">
-                            @endif
-                        </td>
-                        <td data-label="Actions">
-                            <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-edit-green">Edit</a>
-                            <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" style="display:inline-block;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure to delete this product?')">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
 
 @endsection

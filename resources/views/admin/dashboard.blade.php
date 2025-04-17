@@ -114,7 +114,7 @@
             <p>{{ $totalCategories }}</p>
         </div>
         <div class="card">
-            <h3>Total Subcategories</h3>
+            <h3>Total Sub-Categorey</h3>
             <p>{{ $totalSubcategories }}</p>
         </div>
     </div>

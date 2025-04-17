@@ -12,9 +12,12 @@ class ProductController extends Controller
     // Display products in admin panel
     public function index()
     {
-        $products = Product::with('category', 'subcategory')->get();
+        // Ensure you're using paginate instead of get
+        $products = Product::with('category', 'subcategory')->paginate(10);  // 10 items per page
+    
         return view('admin.products.index', compact('products'));
     }
+    
 
     // Show product creation form
     public function create()

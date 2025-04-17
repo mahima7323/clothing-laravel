@@ -21,16 +21,16 @@
                     <td>{{ $category->name }}</td>
                     <td>
                         <!-- Edit Button -->
-                        <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-success btn-sm">
-                            <i class="fas fa-pen"></i> Edit
+                        <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-success btn-sm" title="Edit">
+                            <i class="fa fa-edit"></i>
                         </a>
 
                         <!-- Delete Button -->
                         <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this category?')">
-                                <i class="fas fa-trash"></i> Delete
+                            <button type="submit" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this category?')">
+                                <i class="fa fa-trash"></i>
                             </button>
                         </form>
                     </td>
@@ -98,8 +98,9 @@
     .btn {
         display: inline-flex;
         align-items: center;
-        padding: 6px 12px;
-        margin: 0 4px;
+        justify-content: center;
+        padding: 6px 10px;
+        margin: 0 2px;
         font-size: 14px;
         border-radius: 4px;
         color: white;
@@ -107,7 +108,7 @@
     }
 
     .btn i {
-        margin-right: 5px;
+        font-size: 14px;
     }
 
     .btn-sm {

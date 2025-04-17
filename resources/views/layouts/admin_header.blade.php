@@ -5,6 +5,9 @@
     @vite('resources/js/admin.js')
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Font Awesome 4.7 CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
    
     <style>
         body {
@@ -109,23 +112,23 @@
     
     <div class="dropdown">Categories</div>
     <div class="submenu">
-        <a href="{{ route('admin.categories.index') }}">Category Index</a>
+        <a href="{{ route('admin.categories.index') }}">Category List</a>
         <a href="{{ route('admin.categories.create') }}">Add Category</a>
     </div>
     
-    <div class="dropdown">Subcategories</div>
+    <div class="dropdown">Sub-Categorey</div>
     <div class="submenu">
-        <a href="{{ route('admin.subcategories.index') }}">Subcategory Index</a>
-        <a href="{{ route('admin.subcategories.create') }}">Add Subcategory</a>
+        <a href="{{ route('admin.subcategories.index') }}">Sub-Categorey List</a>
+        <a href="{{ route('admin.subcategories.create') }}">Add Sub-Categorey</a>
     </div>
     
     <div class="dropdown">Products</div>
     <div class="submenu">
-        <a href="{{ route('admin.products.index') }}">Product Index</a>
+        <a href="{{ route('admin.products.index') }}">Product List</a>
         <a href="{{ route('admin.products.create') }}">Add Product</a>
     </div>
     
-    <a href="{{ route('admin.users') }}">User Management</a>
+    <a href="{{ route('admin.users') }}">Users</a>
     <a href="{{ route('admin.orders.index') }}" class="{{ request()->is('admin/orders') ? 'active' : '' }}">Orders</a>
 
     <a href="#">Reports</a>

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,6 +24,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
 
@@ -70,10 +70,17 @@
             transform: scale(1.05);
         }
 
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
         .icons {
             display: flex;
             gap: 15px;
             align-items: center;
+            margin-top: 10px; /* Adjusted to move icons down */
         }
 
         .icon {
@@ -85,7 +92,20 @@
 
         .icon:hover {
             transform: scale(1.2);
-            color: #f39c12;
+            color:rgb(196, 70, 39);
+        }
+
+        .user-section {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .user-greeting {
+            color: #e74c3c; /* Red color for the name */
+            font-size: 22px; /* Larger font size */
+            font-weight: bold; /* Bold font weight */
+            margin-bottom: 5px;
         }
 
         .btn-logout {
@@ -96,6 +116,9 @@
             color: #fff;
             font-weight: bold;
             transition: background-color 0.3s ease, transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Space between text and icon */
         }
 
         .btn-logout:hover {
@@ -103,61 +126,89 @@
             transform: scale(1.05);
         }
 
+        .btn-logout i {
+            font-size: 18px; /* Icon size */
+        }
+
         @media screen and (max-width: 768px) {
             header {
                 flex-direction: column;
                 align-items: center;
                 padding: 20px;
-            }
-
-            .logo h1 {
-                font-size: 26px;
+                gap: 20px;
             }
 
             nav ul {
                 flex-direction: column;
                 gap: 15px;
+                align-items: center;
             }
 
-            .btn-logout {
-                margin-top: 10px;
+            .header-right {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .user-section {
+                align-items: center;
+            }
+
+            .user-greeting {
+                color: #e74c3c; /* Red color for the name */
+                font-size: 18px; /* Larger font size for smaller screens */
+                font-weight: bold; /* Bold font weight */
+                margin-bottom: 5px;
             }
         }
     </style>
 </head>
-
 <body>
-    <header>
-        <div class="logo">
-            <img src="https://img.freepik.com/premium-vector/circle-floral-fashion-store-hanger-logo-design-vector_680355-4.jpg" alt="Logo">
-        </div>
-        <nav>
-            <ul>
-                <li><a href="/">Home</a></li>
-                <li><a href="/product_list">Products</a></li>
-                <li><a href="/about">About Us</a></li>
-                <li><a href="/contact">Contact Us</a></li>
-                <li><a href="/feedback">Feedback</a></li>
-            </ul>
-        </nav>
-        
+
+<header>
+    <div class="logo">
+        <img src="https://img.freepik.com/premium-vector/circle-floral-fashion-store-hanger-logo-design-vector_680355-4.jpg" alt="Logo">
+    </div>
+
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/product_list">Products</a></li>
+            <li><a href="/about">About Us</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+            <li><a href="/feedback">Feedback</a></li>
+            <li><a href="/order_success">Orders</a></li>
+
+        </ul>
+    </nav>
+
+    <div class="header-right">
         <div class="icons">
             <a href="{{ route('wishlist.view') }}" class="icon">
-                <i class="fa-solid fa-heart"></i> <!-- Wishlist Icon -->
+                <i class="fa-solid fa-heart"></i>
             </a>
             <a href="{{ route('cart.page') }}" class="icon">
-           
-                <i class="fa-solid fa-cart-shopping"></i> <!-- Cart Icon -->
+                <i class="fa-solid fa-cart-shopping"></i>
             </a>
         </div>
-        
-        <a href="#" class="btn-logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
-        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-            @csrf
-        </form>
-    </header>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+        <div class="user-section">
+            @if(Auth::check())
+            <div class="user-greeting">
+                Hello, {{ Auth::user()->name }}!
+            </div>
+            @endif
+
+            <a href="#" class="btn-logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+        </div>
+
+    </div>
+</header>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 </body>
-
 </html>

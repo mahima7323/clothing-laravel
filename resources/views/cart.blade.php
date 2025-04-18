@@ -273,16 +273,10 @@
             });
 
             $("#order-form").submit(function (e) {
-                e.preventDefault();
-                $.post("{{ route('order.place') }}", { _token: "{{ csrf_token() }}" }, function (response) {
-                    if (response.success) {
-                        alert(response.message);
-                        window.location.href = response.redirect;
-                    } else {
-                        alert('Order failed!');
-                    }
-                });
-            });
+    e.preventDefault();
+    window.location.href = "{{ url('address/create') }}";
+});
+
         });
     </script>
 </body>

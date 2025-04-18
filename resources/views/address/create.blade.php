@@ -84,46 +84,51 @@
 
 <body>
     <div class="container">
-        <!-- Display Success Message -->
+        <h2>Add Address</h2>
+
         @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
+        <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
-        <h2>Order Summary</h2>
+        <form id="address-form" action="{{ route('order.place') }}" method="POST" style="margin-top: 20px;">
+            @csrf
+            <h3>Shipping Address</h3>
+            <div style="max-width: 500px; margin: 0 auto; text-align: left;">
+                <label for="fullname">Full Name:</label><br>
+                <input type="text" name="fullname" id="fullname" required style="width: 100%; padding: 8px;"><br><br>
 
-        @if($order)
-        <h1 class="section-title">Order Success</h1>
-        <p class="text-center">Thank you for your order! Your order has been successfully placed.</p>
-        <p class="text-center">Order ID: <strong>{{ $order->id }}</strong></p>
-        <p class="text-center">Order Date: <strong>{{ $order->created_at->format('d M Y, H:i') }}</strong></p>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($order->orderItems as $item)
-                <tr>
-                    <td>{{ $item->product->name ?? 'Product not found' }}</td>
-                    <td>{{ $item->quantity }}</td>
-                    <td>₹{{ number_format($item->price, 2) }}</td>
-                    <td>₹{{ number_format($item->price * $item->quantity, 2) }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                <label for="address">Address:</label><br>
+                <textarea name="address" id="address" required style="width: 100%; padding: 8px;"></textarea><br><br>
 
-        <p><strong>Grand Total: ₹{{ number_format($order->total_price, 2) }}</strong></p>
-        @else
-        <p>No order found. Please place an order first.</p>
-        @endif
+                <label for="city">City:</label><br>
+                <input type="text" name="city" id="city" required style="width: 100%; padding: 8px;"><br><br>
+
+                <label for="pincode">Pincode:</label><br>
+                <input type="text" name="pincode" id="pincode" required style="width: 100%; padding: 8px;"><br><br>
+
+                <label for="phone">Phone:</label><br>
+                <input type="text" name="phone" id="phone" required style="width: 100%; padding: 8px;"><br><br>
+
+                <button type="submit" class="btn-success">Submit Order</button>
+            </div>
+        </form>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // When Place Order button is clicked
+            $('#show-address-form').on('click', function() {
+                // Hide the Place Order button
+                $(this).hide();
+
+                // Show the address form with an animation
+                $('#address-form').slideDown();
+            });
+        });
+    </script>
+
 </body>
 
 </html>

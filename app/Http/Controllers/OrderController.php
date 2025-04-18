@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 
@@ -16,7 +17,7 @@ class OrderController extends Controller
     {
         // Retrieve orders along with the user and order items (with product info)
         $orders = Order::with(['user', 'orderItems.product'])->paginate(10);
-        
+
         // Pass the orders data to the view
         return view('admin.orders.index', compact('orders'));
     }
@@ -64,11 +65,13 @@ class OrderController extends Controller
         Cart::where('user_id', $userId)->delete();
 
         // Return success message and redirect route
-        return response()->json([
-            'success' => true,
-            'message' => 'Your order has been placed successfully!',
-            'redirect' => route('order.success')
-        ]);
+        return redirect()->route('order.success')->with('success', 'Your order has been placed successfully!');
+
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Your order has been placed successfully!',
+        //     'redirect' => route('order.success')
+        // ]);
     }
 
     // Method to display the order success page after a successful order placement
@@ -83,7 +86,10 @@ class OrderController extends Controller
             return redirect()->route('cart.view')->with('error', 'No recent order found.');
         }
 
-        return view('order_success', compact('order'));
+        // Fetch the success message from session (if any)
+        $successMessage = session('success');
+
+        return view('order_success', compact('order', 'successMessage'));
     }
 
     // Method to display order details based on the order ID

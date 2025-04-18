@@ -10,6 +10,11 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminDashboardController;
+use App\Http\Controllers\AddressController;
+
+Route::get('/address/create', [AddressController::class, 'create'])->name('address.create');
+Route::post('/address/store', [AddressController::class, 'store'])->name('address.store');
+
 
 // Admin Routes
 Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');

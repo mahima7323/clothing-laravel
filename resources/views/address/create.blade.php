@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Product List</title>
+    <title>Add Address</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
@@ -12,123 +12,95 @@
             background-color: #f8f9fa;
         }
 
-        .section-title {
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: 50px auto;
+        }
+
+        .form-container h3 {
             text-align: center;
-            margin-top: 30px;
             margin-bottom: 20px;
             font-weight: bold;
             color: #333;
         }
 
-        .filter-box {
-            background: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-        }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .product-card {
-            background-color: #fff;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .product-card img {
-            width: 100%;
-            height: 220px;
-            border-radius: 10px;
-            object-fit: cover;
-            margin-bottom: 15px;
-        }
-
-        .product-card h5 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: #333;
-        }
-
-        .product-card p {
-            font-size: 0.95rem;
-            color: #555;
-        }
-
-        .price {
-            font-size: 1.1rem;
+        .form-container label {
             font-weight: bold;
-            color: #28a745;
-            margin: 10px 0;
+            margin-bottom: 5px;
+            display: block;
         }
 
-        .btn-cart,
-        .btn-wishlist {
-            width: 48%;
-            margin-top: 10px;
+        .form-container input,
+        .form-container textarea {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .form-container button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-container button:hover {
+            background-color: #218838;
+        }
+
+        .form-container .alert {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h2>Add Address</h2>
-
-        @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
-        <form id="address-form" action="{{ route('order.place') }}" method="POST" style="margin-top: 20px;">
-            @csrf
+        <div class="form-container">
             <h3>Shipping Address</h3>
-            <div style="max-width: 500px; margin: 0 auto; text-align: left;">
-                <label for="fullname">Full Name:</label><br>
-                <input type="text" name="fullname" id="fullname" required style="width: 100%; padding: 8px;"><br><br>
 
-                <label for="address">Address:</label><br>
-                <textarea name="address" id="address" required style="width: 100%; padding: 8px;"></textarea><br><br>
+            @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
 
-                <label for="city">City:</label><br>
-                <input type="text" name="city" id="city" required style="width: 100%; padding: 8px;"><br><br>
+            <form id="address-form" action="{{ route('order.place') }}" method="POST">
+                @csrf
+                <label for="fullname">Full Name:</label>
+                <input type="text" name="fullname" id="fullname" placeholder="Enter your full name" required>
 
-                <label for="pincode">Pincode:</label><br>
-                <input type="text" name="pincode" id="pincode" required style="width: 100%; padding: 8px;"><br><br>
+                <label for="email">Email:</label>
+                <input type="email" name="email" id="email" placeholder="Enter your email address" required>
 
-                <label for="phone">Phone:</label><br>
-                <input type="text" name="phone" id="phone" required style="width: 100%; padding: 8px;"><br><br>
+                <label for="address">Address:</label>
+                <textarea name="address" id="address" placeholder="Enter your address" rows="3" required></textarea>
 
-                <button type="submit" class="btn-success">Submit Order</button>
-            </div>
-        </form>
+                <label for="city">City:</label>
+                <input type="text" name="city" id="city" placeholder="Enter your city" required>
+
+                <label for="pincode">Pincode:</label>
+                <input type="text" name="pincode" id="pincode" placeholder="Enter your pincode" required>
+
+                <label for="phone">Phone:</label>
+                <input type="text" name="phone" id="phone" placeholder="Enter your phone number" required>
+
+                <button type="submit">Submit Order</button>
+            </form>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
-        $(document).ready(function() {
-            // When Place Order button is clicked
-            $('#show-address-form').on('click', function() {
-                // Hide the Place Order button
-                $(this).hide();
-
-                // Show the address form with an animation
-                $('#address-form').slideDown();
-            });
-        });
-    </script>
-
 </body>
 
 </html>

@@ -9,6 +9,8 @@ use App\Models\OrderItem;
 use App\Models\Product; // Ensure you have Product model included
 use App\Models\Cart; // Ensure you have Cart model included
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+
 
 class OrderController extends Controller
 {
@@ -29,7 +31,7 @@ class OrderController extends Controller
         if (!Auth::check()) {
             return response()->json(['success' => false, 'message' => 'You must be logged in to place an order.']);
         }
-
+        // dd(Auth::user()); 
         // Retrieve the cart from the database for the logged-in user
         $userId = Auth::id();
         $cartItems = Cart::with('product')->where('user_id', $userId)->get();
@@ -63,6 +65,26 @@ class OrderController extends Controller
 
         // Clear the cart after placing the order
         Cart::where('user_id', $userId)->delete();
+
+
+        // Send a simple email to the user with order details
+        $emailContent = "Dear " . Auth::user()->name . ",\n\n";
+        $emailContent .= "Thank you for your order! Your order has been placed successfully.\n\n";
+        $emailContent .= "Order Summary:\n";
+
+        foreach ($cartItems as $item) {
+            $emailContent .= $item->product->name . " - " . $item->quantity . " x ₹" . $item->product->price . "\n";
+        }
+
+        $emailContent .= "\nTotal: ₹" . number_format($totalPrice, 2) . "\n\n";
+        $emailContent .= "Thank you for shopping with us!\n";
+
+        // Send the email using Mail::raw()
+        Mail::raw($emailContent, function ($message) {
+            $message->to(Auth::user()->email)
+                ->subject('Order Confirmation');
+        });
+
 
         // Return success message and redirect route
         return redirect()->route('order.success')->with('success', 'Your order has been placed successfully!');

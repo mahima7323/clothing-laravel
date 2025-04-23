@@ -12,6 +12,30 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AddressController;
 
+
+
+// Define routes
+Route::middleware(['auth'])->group(function () {
+    // Route to show the profile edit form
+    Route::get('/profile/edit', [UsersController::class, 'edit'])->name('profile.edit');
+    
+    // Route to handle profile update
+    Route::post('/profile/update', [UsersController::class, 'update'])->name('profile.update');
+    
+    // Route for order history (redirect to order_success page)
+    Route::get('/orders/history', function () {
+        return redirect()->route('order_success'); // Redirecting to 'order_success'
+    })->name('orders.history');
+
+    // Define the order_success page route
+    Route::get('/order_success', function () {
+        return view('order_success'); // Assuming you have a view named 'order_success.blade.php'
+    })->name('order_success');
+});
+
+
+
+
 Route::get('/address/create', [AddressController::class, 'create'])->name('address.create');
 Route::post('/address/store', [AddressController::class, 'store'])->name('address.store');
 

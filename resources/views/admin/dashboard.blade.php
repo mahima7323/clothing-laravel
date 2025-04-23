@@ -119,7 +119,7 @@
         </div>
     </div>
 
-    <div class="chart-container">
+    <!-- <div class="chart-container">
         <div class="chart-card">
             <h3>Sales Reports</h3>
             <canvas id="salesChart"></canvas>
@@ -128,10 +128,10 @@
             <h3>Transaction Analytics</h3>
             <canvas id="transactionChart"></canvas>
         </div>
-    </div>
+    </div> -->
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const ctx = document.getElementById('salesChart').getContext('2d');
     new Chart(ctx, {
@@ -165,7 +165,8 @@
             responsive: true
         }
     });
-</script>
+</script> -->
+<br><br><br><br>
 
 @include('layouts.footer')
 

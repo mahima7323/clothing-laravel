@@ -22,7 +22,7 @@
                     <td>
                         <!-- Edit Button -->
                         <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-success btn-sm" title="Edit">
-                            <i class="fa fa-edit"></i>
+                        <i class="fa fa-pencil"></i>
                         </a>
 
                         <!-- Delete Button -->

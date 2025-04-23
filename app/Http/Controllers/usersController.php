@@ -84,4 +84,37 @@ class UsersController extends Controller
         Auth::logout();
         return redirect('/login')->with('success', 'You have been logged out successfully.');
     }
+
+    public function edit()
+    {
+        return view('edit_profile'); // View path: resources/views/edit_profile.blade.php
+    }
+
+    // Handle profile update
+    public function update(Request $request)
+{
+    $request->validate([
+        'name'   => 'required|string|max:255',
+        'email'  => 'required|email|unique:users,email,' . Auth::id(),
+        'cno'    => 'nullable|string|max:20',
+        'gender' => 'nullable|in:male,female,other',
+        'city'   => 'nullable|string|max:255',
+    ]);
+
+    /** @var \App\Models\User $user */
+    $user = Auth::user();
+
+    $user->name   = $request->name;
+    $user->email  = $request->email;
+    $user->cno    = $request->cno;
+    $user->gender = $request->gender;
+    $user->city   = $request->city;
+
+    $user->save();
+
+    return redirect()->back()->with('success', 'Profile updated successfully!');
+}
+
+    
+
 }

@@ -1,129 +1,113 @@
 @extends('layouts.admin_header')
 
 @section('content')
-<div class="container mt-5">
-    <h2>User List</h2>
+<div class="user-list-container">
+    <div class="header">
+        <h2>User Management</h2>
+    </div>
 
-    <!-- User Table -->
-    <table class="table table-bordered table-striped table-hover">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Contact No</th>
-                <th>Gender</th>
-                <th>City</th>
-                <th>Registered At</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($users as $user)
-            <tr>
-                <td>{{ $user->id }}</td>
-                <td>{{ $user->name }}</td>
-                <td>{{ $user->email }}</td>
-                <td>{{ $user->cno }}</td>
-                <td>{{ $user->gender }}</td>
-                <td>{{ $user->city }}</td>
-                <td>{{ $user->created_at->format('d M Y, h:i A') }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="table-wrapper">
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>#ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Contact</th>
+                    <th>Gender</th>
+                    <th>City</th>
+                    <th>Registered At</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($users as $user)
+                <tr>
+                    <td class="text-id">{{ $user->id }}</td>
+                    <td class="text-name">{{ $user->name }}</td>
+                    <td class="text-email">{{ $user->email }}</td>
+                    <td class="text-contact">{{ $user->cno }}</td>
+                    <td class="text-gender">{{ ucfirst($user->gender) }}</td>
+                    <td class="text-city">{{ $user->city }}</td>
+                    <td class="text-date">{{ $user->created_at->format('d M Y, h:i A') }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="no-data">No users available.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<!-- Inline CSS for User Table -->
+<!-- Custom CSS with Font Colors -->
 <style>
-    /* Container Styling */
-    .container {
-        max-width: 1200px;
-        margin-top: 30px;
-        padding: 20px;
-        background-color: #f9f9f9;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    .user-list-container {
+        max-width: 1100px;
+        margin: 40px auto;
+        background: #ffffff;
+        padding: 30px 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    /* Heading Styling */
-    h2 {
-        font-size: 24px;
-        margin-bottom: 20px;
-        color: #333;
+    .header h2 {
+        font-size: 28px;
+        font-weight: 600;
+        color: #34495e;
+        margin-bottom: 30px;
         text-align: center;
     }
 
-    /* Table Styling */
-    table {
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .user-table {
         width: 100%;
-        margin: 20px 0;
         border-collapse: collapse;
-        font-size: 14px;
+        font-size: 15px;
     }
 
-    table th, table td {
+    .user-table thead {
+        background-color: #2c3e50;
+        color: #ffffff;
+    }
+
+    .user-table th, .user-table td {
+        padding: 14px;
         text-align: center;
-        padding: 12px;
-        border: 1px solid #ddd;
+        border-bottom: 1px solid #ddd;
     }
 
-    /* Table Header Styling */
-    table th {
-        background-color: #007bff;
-        color: white;
-        font-weight: bold;
+    .user-table tbody tr:hover {
+        background-color: #f1f5f9;
     }
 
-    /* Table Body Row Styling */
-    table tbody tr:nth-child(even) {
-        background-color: #f2f2f2;
-    }
-
-    /* Table Body Text Styling */
-    table tbody td {
-        color: #555;
-    }
-
-    /* Table Row Hover Styling */
-    table tbody tr:hover {
-        background-color: #e9f5ff;
-        cursor: pointer;
-    }
-
-    /* Pagination Styling */
-    .pagination {
+    .no-data {
         text-align: center;
-        margin-top: 20px;
+        color: #999;
+        font-style: italic;
     }
 
-    .pagination a {
-        padding: 8px 16px;
-        margin: 0 4px;
-        background-color: #007bff;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-    }
+    /* Font Colors */
+    .text-id { color: #7f8c8d; }
+    .text-name { color: #2980b9; }
+    .text-email { color: #8e44ad; }
+    .text-contact { color: #16a085; }
+    .text-gender { color: #d35400; }
+    .text-city { color: #c0392b; }
+    .text-date { color: #2c3e50; }
 
-    .pagination a:hover {
-        background-color: #0056b3;
-    }
-
-    /* Responsive Styling */
     @media (max-width: 768px) {
-        .container {
-            width: 100%;
+        .user-list-container {
+            padding: 20px;
+        }
+
+        .user-table th, .user-table td {
+            font-size: 13px;
             padding: 10px;
-        }
-
-        table th, table td {
-            font-size: 12px;
-        }
-
-        .pagination a {
-            padding: 6px 12px;
         }
     }
 </style>
-
 @endsection

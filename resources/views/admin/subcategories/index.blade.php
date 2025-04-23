@@ -23,7 +23,7 @@
                         <td>
                             <!-- Edit Button (Green) -->
                             <a href="{{ route('admin.subcategories.edit', $subcategory->id) }}" class="btn btn-edit-green btn-sm">
-                                <i class="fas fa-edit"></i> Edit
+                                <i class="fa fa-pencil"></i> Edit
                             </a>
 
                             <!-- Delete Button -->
@@ -31,9 +31,11 @@
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this subcategory?')">
-                                    <i class="fas fa-trash-alt"></i> Delete
+                                    <i class="fa fa-trash"></i> Delete
                                 </button>
                             </form>
+
+                            
                         </td>
                     </tr>
                 @endforeach

@@ -80,7 +80,7 @@
             display: flex;
             gap: 15px;
             align-items: center;
-            margin-top: 10px; /* Adjusted to move icons down */
+            margin-top: 10px;
         }
 
         .icon {
@@ -92,42 +92,67 @@
 
         .icon:hover {
             transform: scale(1.2);
-            color:rgb(196, 70, 39);
+            color: rgb(196, 70, 39);
         }
 
         .user-section {
             display: flex;
             flex-direction: column;
             align-items: flex-end;
+            position: relative;
         }
 
         .user-greeting {
-            color: #e74c3c; /* Red color for the name */
-            font-size: 22px; /* Larger font size */
-            font-weight: bold; /* Bold font weight */
+            color: #e74c3c;
+            font-size: 22px;
+            font-weight: bold;
             margin-bottom: 5px;
         }
 
-        .btn-logout {
-            background-color: #e74c3c;
-            padding: 10px 20px;
-            border-radius: 30px;
-            text-decoration: none;
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .dropdown-toggle {
+            background: none;
+            border: none;
             color: #fff;
-            font-weight: bold;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px; /* Space between text and icon */
+            font-size: 22px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
         }
 
-        .btn-logout:hover {
-            background-color: #c0392b;
-            transform: scale(1.05);
+        .dropdown-toggle:hover {
+            transform: scale(1.2);
+            color: rgb(196, 70, 39);
         }
 
-        .btn-logout i {
-            font-size: 18px; /* Icon size */
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #fff;
+            color: #000;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            z-index: 100;
+            min-width: 160px;
+            flex-direction: column;
+        }
+
+        .dropdown-menu a {
+            padding: 10px 15px;
+            display: block;
+            text-decoration: none;
+            color: #333;
+            transition: background 0.3s ease;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f4f4f4;
         }
 
         @media screen and (max-width: 768px) {
@@ -154,10 +179,7 @@
             }
 
             .user-greeting {
-                color: #e74c3c; /* Red color for the name */
-                font-size: 18px; /* Larger font size for smaller screens */
-                font-weight: bold; /* Bold font weight */
-                margin-bottom: 5px;
+                font-size: 18px;
             }
         }
     </style>
@@ -176,8 +198,6 @@
             <li><a href="/about">About Us</a></li>
             <li><a href="/contact">Contact Us</a></li>
             <li><a href="/feedback">Feedback</a></li>
-            <li><a href="/order_success">Orders</a></li>
-
         </ul>
     </nav>
 
@@ -198,17 +218,38 @@
             </div>
             @endif
 
-            <a href="#" class="btn-logout" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout
-            </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-            </form>
+            <div class="dropdown-container">
+                <button class="dropdown-toggle" onclick="toggleDropdown()">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <div class="dropdown-menu" id="dropdown-menu">
+                    <a href="{{ route('profile.edit') }}">Update Profile</a>
+                    <!-- <a href="{{ route('order_success') }}">Order History</a> -->
+                    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
+                </div>
+            </div>
         </div>
-
     </div>
 </header>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+<script>
+    function toggleDropdown() {
+        const menu = document.getElementById('dropdown-menu');
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.onclick = function(event) {
+        if (!event.target.matches('.dropdown-toggle') && !event.target.closest('.dropdown-container')) {
+            document.getElementById('dropdown-menu').style.display = 'none';
+        }
+    }
+</script>
+
 </body>
 </html>

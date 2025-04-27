@@ -15,14 +15,29 @@ use Illuminate\Support\Facades\Mail;
 class OrderController extends Controller
 {
     // Method to display all orders with related user and order items
-    public function index()
-    {
-        // Retrieve orders along with the user and order items (with product info)
-        $orders = Order::with(['user', 'orderItems.product'])->paginate(10);
+    // public function index()
+    // {
+    //     // Retrieve orders along with the user and order items (with product info)
+    //     $orders = Order::with(['user', 'orderItems.product'])->paginate(10);
 
-        // Pass the orders data to the view
-        return view('admin.orders.index', compact('orders'));
+    //     // Pass the orders data to the view
+    //     return view('admin.orders.index', compact('orders'));
+    // }
+    public function index(Request $request)
+{
+    $status = $request->get('status');
+
+    // Filter based on the status if it's set
+    if ($status) {
+        $orders = Order::where('status', $status)->paginate(10);
+    } else {
+        // If no status is selected, show all orders
+        $orders = Order::paginate(10);
     }
+
+    return view('admin.orders.index', compact('orders'));
+}
+
 
     // Method to place an order
     public function placeOrder(Request $request)
@@ -134,4 +149,40 @@ class OrderController extends Controller
             return $item->product->price * $item->quantity;
         });
     }
+
+    public function updateOrderStatus(Request $request, $orderId)
+{
+    $order = Order::find($orderId);
+
+    if ($order && $order->status == 'Pending') {
+        $order->status = 'Completed';
+        $order->save();
+
+        return redirect()->route('admin.orders.index')->with('success', 'Order marked as completed.');
+
+    }
+
+    return redirect()->route('admin.orders')->with('error', 'Order not found or already processed.');
+}
+
+public function cancelOrderStatus(Request $request, $orderId)
+{
+    // Find the order by its ID
+    $order = Order::find($orderId);
+
+    // Check if the order exists and is still in the "Pending" status
+    if ($order && $order->status == 'Pending') {
+        // Update the order status to "Cancelled"
+        $order->status = 'Cancelled';
+        $order->save();
+
+        // Redirect back to the orders page with a success message
+        return redirect()->route('admin.orders.index')->with('success', 'Order marked as cancelled.');
+    }
+
+    // Redirect back with an error if the order is not found or cannot be cancelled
+    return redirect()->route('admin.orders.index')->with('error', 'Order not found or cannot be cancelled.');
+}
+
+
 }

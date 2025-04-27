@@ -5,61 +5,92 @@
 <div class="container">
     <h2 class="page-title">Order List</h2>
 
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>User</th>
-                <th>Products</th>
-                <th>Quantity</th>
-                <th>Total Amount</th>
-                <th>Status</th>
-                <th>Ordered At</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($orders as $order)
-            <tr>
-                <td>{{ $order->id }}</td>
-                <td>{{ $order->user->name ?? 'N/A' }}</td>
-                <td>
-                    @foreach($order->orderItems as $item)
-                        {{ $item->product->name ?? 'N/A' }} (₹{{ number_format($item->price, 2) }})<br>
-                    @endforeach
-                </td>
-                <td>
-                    @foreach($order->orderItems as $item)
-                        {{ $item->quantity }}<br>
-                    @endforeach
-                </td>
-                <td>
-                    @php
-                        $totalAmount = $order->orderItems->sum(function($item) {
-                            return $item->quantity * $item->price;
-                        });
-                    @endphp
-                    ₹{{ number_format($totalAmount, 2) }}
-                </td>
-                <td>
-                    <span class="badge 
-                        @if($order->status == 'Pending') badge-info 
-                        @elseif($order->status == 'Completed') badge-success 
-                        @elseif($order->status == 'Cancelled') badge-danger 
-                        @else badge-secondary @endif">
-                        {{ ucfirst($order->status) }}
-                    </span>
-                </td>
-                <td>{{ $order->created_at->format('d M Y, h:i A') }}</td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="7" class="text-center text-muted">No orders found.</td>
-            </tr>
-            @endforelse
-        </tbody>
-    </table>
+    <!-- Filter Buttons -->
+    <div class="d-flex justify-content-center mb-3">
+        <form action="{{ route('admin.orders.index') }}" method="GET" class="mx-2">
+            <button type="submit" name="status" value="Pending" class="btn btn-primary">Pending Orders</button> <!-- Changed btn-info to btn-primary -->
+        </form>
+        <form action="{{ route('admin.orders.index') }}" method="GET" class="mx-2">
+            <button type="submit" name="status" value="Completed" class="btn btn-success">Completed Orders</button>
+        </form>
+        <form action="{{ route('admin.orders.index') }}" method="GET" class="mx-2">
+            <button type="submit" name="status" value="Cancelled" class="btn btn-danger">Cancelled Orders</button>
+        </form>
+    </div>
 
-    <!-- Pagination -->
+    @if($orders->isEmpty())
+        <div class="alert alert-info text-center">
+            No orders available at the moment.
+        </div>
+    @else
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Products</th>
+                    <th>Quantity</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Ordered At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($orders as $order)
+                    <tr @if($order->status == 'Pending') class="table-warning" @endif>
+                        <td>{{ $order->id }}</td>
+                        <td>{{ $order->user->name ?? 'N/A' }}</td>
+                        <td>
+                            @foreach($order->orderItems as $item)
+                                {{ $item->product->name ?? 'N/A' }} (₹{{ number_format($item->price, 2) }})<br>
+                            @endforeach
+                        </td>
+                        <td>
+                            @foreach($order->orderItems as $item)
+                                {{ $item->quantity }}<br>
+                            @endforeach
+                        </td>
+                        <td>
+                            @php
+                                $totalAmount = $order->orderItems->sum(function($item) {
+                                    return $item->quantity * $item->price;
+                                });
+                            @endphp
+                            ₹{{ number_format($totalAmount, 2) }}
+                        </td>
+                        <td>
+                            <span class="badge 
+                                @if($order->status == 'Pending') badge-info 
+                                @elseif($order->status == 'Completed') badge-success 
+                                @elseif($order->status == 'Cancelled') badge-danger 
+                                @else badge-secondary @endif">
+                                {{ ucfirst($order->status) }}
+                            </span>
+                        </td>
+                        <td>{{ $order->created_at->format('d M Y, h:i A') }}</td>
+                        
+                        <td>
+                            @if($order->status == 'Pending')
+                                <form action="{{ route('admin.updateOrderStatus', $order->id) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-success">Mark as Completed</button>
+                                </form>
+
+                                <form action="{{ route('admin.cancelOrderStatus', $order->id) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="btn btn-danger">Cancel Order</button>
+                                </form>
+                            @endif
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+
     <div class="pagination">
         {{ $orders->links() }}
     </div>
@@ -173,21 +204,54 @@
         vertical-align: middle;
     }
 
-    @media (max-width: 768px) {
-        .container {
-            padding: 15px;
-        }
+    button {
+        border: 1px solid transparent;
+        border-radius: 4px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease-in-out;
+    }
 
-        table th, table td {
-            font-size: 12px;
-            padding: 10px;
-        }
+    button.btn-primary {
+        background-color: #007bff;  /* Changed to blue for Pending */
+        color: #fff;
+    }
 
-        .pagination a,
-        .pagination span {
-            font-size: 12px;
-            padding: 5px 10px;
-        }
+    button.btn-success {
+        background-color: #27ae60;
+        color: #fff;
+    }
+
+    button.btn-danger {
+        background-color: #c0392b;
+        color: #fff;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    button:active {
+        background-color: #34495e;
+        box-shadow: none;
+    }
+
+    button:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.8);
+    }
+
+    button:disabled {
+        background-color: #7f8c8d;
+        cursor: not-allowed;
+    }
+
+    form {
+        display: inline-block;
+        margin-right: 12px;
     }
 </style>
 

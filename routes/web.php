@@ -12,6 +12,15 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AddressController;
 
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders');
+    Route::put('/orders/{order}', [OrderController::class, 'updateOrderStatus'])->name('updateOrderStatus');
+});
+
+Route::put('/admin/orders/{order}/cancel', [OrderController::class, 'cancelOrderStatus'])
+    ->name('admin.cancelOrderStatus');
+
+
 
 
 // Define routes

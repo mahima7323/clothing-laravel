@@ -34,8 +34,6 @@
                                     <i class="fa fa-trash"></i> Delete
                                 </button>
                             </form>
-
-                            
                         </td>
                     </tr>
                 @endforeach
@@ -43,8 +41,8 @@
         </table>
 
         <!-- Pagination -->
-        <div class="pagination">
-            {{ $subcategories->links() }}
+        <div class="pagination-wrapper">
+            {{ $subcategories->links('pagination::bootstrap-5') }}
         </div>
     </div>
 
@@ -66,10 +64,11 @@
 
         .page-title {
             text-align: center;
-            font-size: 28px;
+            font-size: 30px;
             margin-bottom: 25px;
-            font-weight: 600;
+            font-weight: bold;
             color: #ffffff;
+            letter-spacing: 1px;
         }
 
         table {
@@ -84,6 +83,7 @@
             color: #ffffff;
             padding: 14px;
             font-weight: bold;
+            text-align: center;
         }
 
         table td {
@@ -134,29 +134,56 @@
             margin-right: 5px;
         }
 
+        /* Fixed Pagination */
+        .pagination-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+        }
+
         .pagination {
-            text-align: center;
-            margin-top: 20px;
+            display: flex;
+            list-style: none;
+            padding-left: 0;
+            gap: 8px;
         }
 
-        .pagination a {
-            padding: 8px 16px;
-            margin: 0 4px;
+        .pagination li a,
+        .pagination li span {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            padding: 8px;
             background-color: #007bff;
-            color: white;
-            border-radius: 4px;
+            color: #fff;
             text-decoration: none;
-            border: 1px solid transparent;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: 0.3s ease;
         }
 
-        .pagination a:hover,
-        .pagination .active {
+        .pagination li a:hover,
+        .pagination li span:hover {
             background-color: #0056b3;
+        }
+
+        .pagination .active span {
+            background-color: #0056b3;
+            font-weight: bold;
+            cursor: default;
+        }
+
+        .pagination .disabled span {
+            background-color: #6c757d;
+            cursor: not-allowed;
         }
 
         @media (max-width: 768px) {
             .container {
-                padding: 15px;
+                padding: 20px;
             }
 
             table th, table td {
@@ -169,8 +196,11 @@
                 padding: 5px 10px;
             }
 
-            .pagination a {
-                padding: 6px 12px;
+            .pagination li a,
+            .pagination li span {
+                width: 34px;
+                height: 34px;
+                font-size: 12px;
             }
         }
     </style>

@@ -130,7 +130,6 @@
 
 <div class="container product-details">
     <!-- Breadcrumbs -->
-    
 
     <div class="row align-items-center">
         <!-- Left side: Image -->
@@ -145,6 +144,19 @@
                 <span class="old-price">₹{{ number_format($product->price + 300, 2) }}</span>
             </p>
             <p>{{ $product->description }}</p>
+            <div class="d-flex justify-content-between">
+                <button class="btn btn-sm btn-primary btn-cart add-to-cart"
+                        data-id="{{ $product->id }}"
+                        data-name="{{ $product->name }}"
+                        data-price="{{ $product->price }}"
+                        data-image="{{ asset('storage/' . $product->image) }}">
+                    <i class="fa fa-cart-plus me-1"></i> Cart
+                </button>
+                <button class="btn btn-sm btn-danger btn-wishlist add-to-wishlist"
+                        data-id="{{ $product->id }}">
+                    <i class="fa fa-heart me-1"></i> Wishlist
+                </button>
+            </div>
 
             <div class="offers">
                 <strong>Offers:</strong>
@@ -163,7 +175,36 @@
     </div>
 </div>
 
-<!-- Footer with Home and Products Buttons -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    // Add to Cart
+    $(document).on("click", ".add-to-cart", function() {
+        $.post("{{ route('cart.add') }}", {
+            _token: "{{ csrf_token() }}",
+            id: $(this).data("id"),
+            name: $(this).data("name"),
+            price: $(this).data("price"),
+            image: $(this).data("image")
+        }, function(response) {
+            alert(response.message);
+        }).fail(function(xhr) {
+            alert("Error: " + xhr.responseJSON.message);
+        });
+    });
 
+    // Add to Wishlist
+    $(document).on("click", ".add-to-wishlist", function() {
+        $.post("{{ route('wishlist.add') }}", {
+            _token: "{{ csrf_token() }}",
+            id: $(this).data("id")
+        }, function(response) {
+            alert(response.message);
+        }).fail(function(xhr) {
+            alert("Error: " + xhr.responseJSON.message);
+        });
+    });
+</script>
+
+<!-- Footer with Home and Products Buttons -->
 
 @include('layouts.footer')

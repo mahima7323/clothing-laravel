@@ -4,6 +4,8 @@
     <title>Wishlist</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -168,30 +170,66 @@
 
     <script>
         $(document).ready(function() {
-            // Add to Cart
-            $(document).on("click", ".add-to-cart", function() {
-                var product_id = $(this).data("id");
-                var name = $(this).data("name");
-                var price = $(this).data("price");
-                var image = $(this).data("image");
+            // Add to Cart with Confirmation
+            $(document).on("click", ".add-to-cart", function(e) {
+                e.preventDefault();
+                var button = $(this);
+                var product_id = button.data("id");
+                var name = button.data("name");
+                var price = button.data("price");
+                var image = button.data("image");
 
-                $.ajax({
-                    url: "{{ route('cart.add') }}",
-                    method: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        id: product_id,
-                        name: name,
-                        price: price,
-                        image: image
-                    },
-                    success: function(response) {
-                        alert(response.message);
-                    },
-                    error: function(xhr) {
-                        alert("Error: " + xhr.responseJSON.message);
+                Swal.fire({
+                    title: 'Move to Cart?',
+                    text: "Do you want to move this item to cart?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2c3e50',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, move it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "{{ route('cart.add') }}",
+                            method: "POST",
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                id: product_id,
+                                name: name,
+                                price: price,
+                                image: image
+                            },
+                            success: function(response) {
+                                Swal.fire('Added!', response.message, 'success');
+                            },
+                            error: function(xhr) {
+                                Swal.fire('Error', xhr.responseJSON?.message || 'Something went wrong.', 'error');
+                            }
+                        });
                     }
                 });
+            });
+
+            // Remove from Wishlist with Confirmation
+            $(document).on("submit", "form", function(e) {
+                var form = this;
+                if ($(form).find("input[name='id']").length > 0) {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "This item will be removed from your wishlist!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#c0392b',
+                        cancelButtonColor: '#999',
+                        confirmButtonText: 'Yes, remove it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit(); // Submit the form after confirmation
+                        }
+                    });
+                }
             });
         });
     </script>

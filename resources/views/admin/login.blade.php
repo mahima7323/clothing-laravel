@@ -82,6 +82,22 @@
             margin-bottom: 15px;
             font-weight: bold;
         }
+
+        .forgot-password {
+            margin-top: 15px;
+            display: block;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .forgot-password a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -102,6 +118,11 @@
 
             <button type="submit">Login</button>
         </form>
+
+        <!-- Forget Password Link -->
+        <div class="forgot-password">
+            <a href="{{ route('admin.password.request') }}">Forgot your password?</a>
+        </div>
     </div>
 </body>
 </html>

@@ -1,4 +1,5 @@
 @include('layouts.header')
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -35,7 +36,8 @@
         }
 
         .form-container input,
-        .form-container textarea {
+        .form-container textarea,
+        .form-container select {
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 10px;
@@ -69,33 +71,34 @@
 <body>
     <div class="container">
         <div class="form-container">
-            <h3>Shipping Address</h3>
+            <h3>Add New Address</h3>
 
             @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+                <div class="alert alert-success">{{ session('success') }}</div>
             @endif
 
             <form id="address-form" action="{{ route('order.place') }}" method="POST">
                 @csrf
-                <label for="fullname">Full Name:</label>
-                <input type="text" name="fullname" id="fullname" placeholder="Enter your full name" required>
 
-                <label for="email">Email:</label>
-                <input type="email" name="email" id="email" placeholder="Enter your email address" required>
+                <!-- Hidden user_id (if user is logged in) -->
+                <input type="hidden" name="user_id" value="{{ auth()->user()->id ?? '' }}">
 
-                <label for="address">Address:</label>
-                <textarea name="address" id="address" placeholder="Enter your address" rows="3" required></textarea>
+                <label for="street">Street:</label>
+                <input type="text" name="street" id="street" placeholder="Enter your street address" required>
 
                 <label for="city">City:</label>
                 <input type="text" name="city" id="city" placeholder="Enter your city" required>
 
-                <label for="pincode">Pincode:</label>
-                <input type="text" name="pincode" id="pincode" placeholder="Enter your pincode" required>
+                <label for="state">State:</label>
+                <input type="text" name="state" id="state" placeholder="Enter your state" required>
 
-                <label for="phone">Phone:</label>
-                <input type="text" name="phone" id="phone" placeholder="Enter your phone number" required>
+                <label for="zip_code">Zip Code:</label>
+                <input type="text" name="zip_code" id="zip_code" placeholder="Enter your zip code" required>
 
-                <button type="submit">Submit Order</button>
+                <label for="country">Country:</label>
+                <input type="text" name="country" id="country" placeholder="Enter your country" required>
+
+                <button type="submit">Submit Address</button>
             </form>
         </div>
     </div>
@@ -104,4 +107,5 @@
 </body>
 
 </html>
+
 @include('layouts.footer')

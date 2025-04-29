@@ -6,10 +6,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Product; // Ensure you have Product model included
+use app\Modelsproduct; // Ensure you have Product model included
 use App\Models\Cart; // Ensure you have Cart model included
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Address;
+
+
 
 
 class OrderController extends Controller
@@ -24,32 +27,53 @@ class OrderController extends Controller
     //     return view('admin.orders.index', compact('orders'));
     // }
     public function index(Request $request)
-{
-    $status = $request->get('status');
+    {
+        $status = $request->get('status');
 
-    // Filter based on the status if it's set
-    if ($status) {
-        $orders = Order::where('status', $status)->paginate(10);
-    } else {
-        // If no status is selected, show all orders
-        $orders = Order::paginate(10);
+        // Filter based on the status if it's set
+        if ($status) {
+            $orders = Order::where('status', $status)->paginate(10);
+        } else {
+            // If no status is selected, show all orders
+            $orders = Order::paginate(10);
+        }
+
+        return view('admin.orders.index', compact('orders'));
     }
-
-    return view('admin.orders.index', compact('orders'));
-}
 
 
     // Method to place an order
     public function placeOrder(Request $request)
     {
         // Check if the user is logged in
-        if (!Auth::check()) {
-            return response()->json(['success' => false, 'message' => 'You must be logged in to place an order.']);
-        }
-        // dd(Auth::user()); 
+
+        $request->validate([
+            'street' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'zip_code' => 'required',
+            'country' => 'required',
+        ]);
+
+        // Check if user is logged in
+        // Store the address for the logged-in user
+        Address::create([
+            'user_id' => auth()->user()->id,
+            'street' => $request->street,
+            'city' => $request->city,
+            'state' => $request->state,
+            'zip_code' => $request->zip_code,
+            'country' => $request->country,
+        ]);
+
         // Retrieve the cart from the database for the logged-in user
         $userId = Auth::id();
         $cartItems = Cart::with('product')->where('user_id', $userId)->get();
+
+        // Check if the cart is empty
+        if ($cartItems->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'Your cart is empty!']);
+        }
 
         // Check if the cart is empty
         if ($cartItems->isEmpty()) {
@@ -102,7 +126,8 @@ class OrderController extends Controller
 
 
         // Return success message and redirect route
-        return redirect()->route('order.success')->with('success', 'Your order has been placed successfully!');
+        return redirect()->route('order.success', ['orderId' => $order->id])
+            ->with('success', 'Your order has been placed successfully!');
 
         // return response()->json([
         //     'success' => true,
@@ -112,22 +137,53 @@ class OrderController extends Controller
     }
 
     // Method to display the order success page after a successful order placement
-    public function orderSuccess()
+    // public function orderSuccess()
+    // {
+    //     $order = Order::with('orderItems.product')
+    //         ->where('user_id', Auth::id())
+    //         ->latest()
+    //         ->first();
+
+    //     if (!$order) {
+    //         return redirect()->route('cart.view')->with('error', 'No recent order found.');
+    //     }
+
+    //     // Fetch the success message from session (if any)
+    //     $successMessage = session('success');
+
+    //     return view('order_success', compact('order', 'successMessage'));
+    // }
+    // public function orderSuccess($orderId)
+    // {
+    //     $order = Order::with('orderItems.product')
+    //         ->where('user_id', Auth::id())
+    //         ->where('id', $orderId)
+    //         ->first();
+
+    //     if (!$order) {
+    //         return redirect()->route('cart.view')->with('error', 'No recent order found.');
+    //     }
+
+    //     $successMessage = session('success');
+    //     return view('order_success', compact('order', 'successMessage'));
+    // }
+
+    public function orderSuccess($orderId)
     {
         $order = Order::with('orderItems.product')
             ->where('user_id', Auth::id())
-            ->latest()
+            ->where('id', $orderId)
             ->first();
 
         if (!$order) {
             return redirect()->route('cart.view')->with('error', 'No recent order found.');
         }
 
-        // Fetch the success message from session (if any)
         $successMessage = session('success');
-
         return view('order_success', compact('order', 'successMessage'));
     }
+
+
 
     // Method to display order details based on the order ID
     public function orderDetails($id)
@@ -151,38 +207,35 @@ class OrderController extends Controller
     }
 
     public function updateOrderStatus(Request $request, $orderId)
-{
-    $order = Order::find($orderId);
+    {
+        $order = Order::find($orderId);
 
-    if ($order && $order->status == 'Pending') {
-        $order->status = 'Completed';
-        $order->save();
+        if ($order && $order->status == 'Pending') {
+            $order->status = 'Completed';
+            $order->save();
 
-        return redirect()->route('admin.orders.index')->with('success', 'Order marked as completed.');
+            return redirect()->route('admin.orders.index')->with('success', 'Order marked as completed.');
+        }
 
+        return redirect()->route('admin.orders')->with('error', 'Order not found or already processed.');
     }
 
-    return redirect()->route('admin.orders')->with('error', 'Order not found or already processed.');
-}
+    public function cancelOrderStatus(Request $request, $orderId)
+    {
+        // Find the order by its ID
+        $order = Order::find($orderId);
 
-public function cancelOrderStatus(Request $request, $orderId)
-{
-    // Find the order by its ID
-    $order = Order::find($orderId);
+        // Check if the order exists and is still in the "Pending" status
+        if ($order && $order->status == 'Pending') {
+            // Update the order status to "Cancelled"
+            $order->status = 'Cancelled';
+            $order->save();
 
-    // Check if the order exists and is still in the "Pending" status
-    if ($order && $order->status == 'Pending') {
-        // Update the order status to "Cancelled"
-        $order->status = 'Cancelled';
-        $order->save();
+            // Redirect back to the orders page with a success message
+            return redirect()->route('admin.orders.index')->with('success', 'Order marked as cancelled.');
+        }
 
-        // Redirect back to the orders page with a success message
-        return redirect()->route('admin.orders.index')->with('success', 'Order marked as cancelled.');
+        // Redirect back with an error if the order is not found or cannot be cancelled
+        return redirect()->route('admin.orders.index')->with('error', 'Order not found or cannot be cancelled.');
     }
-
-    // Redirect back with an error if the order is not found or cannot be cancelled
-    return redirect()->route('admin.orders.index')->with('error', 'Order not found or cannot be cancelled.');
-}
-
-
 }

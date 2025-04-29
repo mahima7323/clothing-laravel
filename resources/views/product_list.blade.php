@@ -67,6 +67,25 @@
             width: 48%;
             margin-top: 10px;
         }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+        }
+
+        .toast {
+            min-width: 200px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
     </style>
 </head>
 <body>
@@ -101,10 +120,10 @@
         <div class="product-grid">
             @foreach($products as $product)
                 <div class="product-card">
-                        <a href="{{ url('product/' . $product->id) }}">
-                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
-                            <h5>{{ $product->name }}</h5>
-                        </a>
+                    <a href="{{ url('product/' . $product->id) }}">
+                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}">
+                        <h5>{{ $product->name }}</h5>
+                    </a>
 
                     <p>{{ $product->description }}</p>
                     <div class="price">₹{{ number_format($product->price, 2) }}</div>
@@ -127,91 +146,71 @@
     @endif
 </div>
 
+<!-- Modal for confirmation -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">Confirmation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="controllerMessage"></div>
+                <div id="userMessage" style="margin-top: 15px;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="confirmAction">Yes, Proceed</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toasts for success messages -->
+<div class="toast-container" id="toast-container"></div>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).ready(function() {
-        // Category change
-        $('#category-select').change(function() {
-            let category_id = $(this).val();
-            if (category_id) {
-                $('#subcategory-container').show();
-                $.get(`{{ url('subcategories') }}/${category_id}`, function(subcategories) {
-                    $('#subcategory-select').html('<option value="">Choose Subcategory</option>');
-                    subcategories.forEach(function(sub) {
-                        $('#subcategory-select').append(`<option value="${sub.id}">${sub.name}</option>`);
+        $(document).on("click", ".add-to-cart, .add-to-wishlist", function() {
+            let button = $(this);
+            let productId = button.data("id");
+            let action = button.hasClass("add-to-cart") ? 'cart' : 'wishlist';
+
+            // Define dynamic messages
+            let controllerMessage = action === 'cart' ? 'Product will be added to your cart.' : 'Product will be added to your wishlist.';
+            let userMessage = action === 'cart' ? 'Do you want to add this product to your cart?' : 'Do you want to add this product to your wishlist?';
+
+            // Insert messages into the modal
+            $('#controllerMessage').html(controllerMessage);
+            $('#userMessage').html(userMessage);
+
+            // Show modal
+            $('#confirmationModal').modal('show');
+
+            // Handle the confirmation button click
+            $('#confirmAction').click(function() {
+                $.post(`{{ route('cart.add') }}`, { _token: "{{ csrf_token() }}", id: productId })
+                    .done(function(response) {
+                        $('#confirmationModal').modal('hide');
+                        showToast(response.message); // Show success toast
+                    })
+                    .fail(function(xhr) {
+                        $('#confirmationModal').modal('hide');
+                        showToast('Error: ' + xhr.responseJSON.message); // Show error toast
                     });
-                });
-            } else {
-                $('#subcategory-container').hide();
-            }
-        });
-
-        // Subcategory filter
-        $('#subcategory-select').change(function() {
-            let subcategory_id = $(this).val();
-            if (subcategory_id) {
-                $.get(`{{ url('filter-products') }}`, {subcategory_id}, function(response) {
-                    let productGrid = $('.product-grid').empty();
-                    if (response.products.length) {
-                        response.products.forEach(product => {
-                            productGrid.append(`
-                                <div class="product-card">
-                                    <a href="/product/${product.id}" style="text-decoration: none;">
-                                        <img src="${product.image}" alt="${product.name}">
-                                        <h5>${product.name}</h5>
-                                    </a>
-                                    <p>${product.description}</p>
-                                    <div class="price">₹${product.price}</div>
-                                    <div class="d-flex justify-content-between">
-                                        <button class="btn btn-sm btn-primary btn-cart add-to-cart"
-                                                data-id="${product.id}" 
-                                                data-name="${product.name}" 
-                                                data-price="${product.price}" 
-                                                data-image="${product.image}">
-                                            <i class="fa fa-cart-plus me-1"></i> Cart
-                                        </button>
-                                        <button class="btn btn-sm btn-danger btn-wishlist add-to-wishlist"
-                                                data-id="${product.id}">
-                                            <i class="fa fa-heart me-1"></i> Wishlist
-                                        </button>
-                                    </div>
-                                </div>
-                            `);
-                        });
-                    } else {
-                        productGrid.html('<div class="alert alert-warning text-center w-100">No products in this subcategory.</div>');
-                    }
-                });
-            }
-        });
-
-        // Add to Cart
-        $(document).on("click", ".add-to-cart", function() {
-            $.post("{{ route('cart.add') }}", {
-                _token: "{{ csrf_token() }}",
-                id: $(this).data("id"),
-                name: $(this).data("name"),
-                price: $(this).data("price"),
-                image: $(this).data("image")
-            }, function(response) {
-                alert(response.message);
-            }).fail(function(xhr) {
-                alert("Error: " + xhr.responseJSON.message);
-            });
-        });
-
-        // Add to Wishlist
-        $(document).on("click", ".add-to-wishlist", function() {
-            $.post("{{ route('wishlist.add') }}", {
-                _token: "{{ csrf_token() }}",
-                id: $(this).data("id")
-            }, function(response) {
-                alert(response.message);
-            }).fail(function(xhr) {
-                alert("Error: " + xhr.responseJSON.message);
             });
         });
     });
+
+    // Show success toast
+    function showToast(message) {
+        let toast = $('<div class="toast show bg-success text-white" role="alert" aria-live="assertive" aria-atomic="true">')
+            .html(`<div class="toast-body">${message}</div>`);
+        $('#toast-container').append(toast);
+        setTimeout(() => toast.fadeOut(() => toast.remove()), 3000);
+    }
 </script>
 </body>
 </html>

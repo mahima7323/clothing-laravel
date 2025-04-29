@@ -17,15 +17,12 @@ class ProductController extends Controller
     
         return view('admin.products.index', compact('products'));
     }
-    
-    
 
     public function show($id)
     {
         $product = Product::with('category', 'subcategory')->findOrFail($id);
         return view('show', compact('product')); 
     }
-
 
     // Show product creation form
     public function create()
@@ -59,9 +56,8 @@ class ProductController extends Controller
             'image' => $imagePath,
         ]);
 
-        //return redirect()->route('admin.products.index')->with('success', 'Product added successfully!');
+        // Display success message
         return redirect()->back()->with('success', 'Product added successfully!');
-
     }
 
     // Show edit form
@@ -104,6 +100,7 @@ class ProductController extends Controller
             'image' => $product->image,
         ]);
 
+        // Display success message
         return redirect()->route('admin.products.index')->with('success', 'Product updated successfully!');
     }
 
@@ -113,6 +110,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
         $product->delete();
 
+        // Display success message
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully!');
     }
 
@@ -124,84 +122,80 @@ class ProductController extends Controller
     }
 
     // Show user product list with filter
-   // In ProductController
+    public function userProductList(Request $request)
+    {
+        $query = Product::with('category', 'subcategory');
 
-// Fetch products by subcategory for the user product list
-public function userProductList(Request $request)
-{
-    $query = Product::with('category', 'subcategory');
+        // Filter by category if category_id is present in the request
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
 
-    // Filter by category if category_id is present in the request
-    if ($request->filled('category_id')) {
-        $query->where('category_id', $request->category_id);
+        // Filter by subcategory if subcategory_id is present in the request
+        if ($request->filled('subcategory_id')) {
+            $query->where('subcategory_id', $request->subcategory_id);
+        }
+
+        // Get filtered products with pagination
+        $products = $query->paginate(10);
+
+        // Fetch all categories and subcategories to populate the filters
+        $categories = Category::all();
+        $subcategories = Subcategory::all();
+
+        return view('product_list', compact('products', 'categories', 'subcategories'));
     }
 
-    // Filter by subcategory if subcategory_id is present in the request
-    if ($request->filled('subcategory_id')) {
-        $query->where('subcategory_id', $request->subcategory_id);
+    public function filterBySubcategory(Request $request)
+    {
+        $query = Product::query();
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('subcategory_id')) {
+            $query->where('subcategory_id', $request->subcategory_id);
+        }
+
+        $products = $query->get()->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price' => $product->price,
+                'image' => asset('storage/' . $product->image),
+            ];
+        });
+
+        return response()->json(['products' => $products]);
     }
 
-    // Get filtered products with pagination
-    $products = $query->paginate(10);
+    public function addToCart(Request $request)
+    {
+        // Validate product ID
+        $product = Product::findOrFail($request->product_id);
 
-    // Fetch all categories and subcategories to populate the filters
-    $categories = Category::all();
-    $subcategories = Subcategory::all();
+        // Fetch current cart from session, if exists
+        $cart = session()->get('cart', []);
 
-    return view('product_list', compact('products', 'categories', 'subcategories'));
-}
+        // Check if product already exists in cart
+        if(isset($cart[$product->id])) {
+            $cart[$product->id]['quantity']++;
+        } else {
+            // Add new product to cart
+            $cart[$product->id] = [
+                'name' => $product->name,
+                'quantity' => 1,
+                'price' => $product->price,
+                'image' => asset('storage/' . $product->image),
+            ];
+        }
 
-public function filterBySubcategory(Request $request)
-{
-    $query = Product::query();
+        // Update session with new cart
+        session()->put('cart', $cart);
 
-    if ($request->filled('category_id')) {
-        $query->where('category_id', $request->category_id);
+        // Return success response
+        return response()->json(['success' => 'Product added to cart!']);
     }
-
-    if ($request->filled('subcategory_id')) {
-        $query->where('subcategory_id', $request->subcategory_id);
-    }
-
-    $products = $query->get()->map(function ($product) {
-        return [
-            'id' => $product->id,
-            'name' => $product->name,
-            'description' => $product->description,
-            'price' => $product->price,
-            'image' => asset('storage/' . $product->image),
-        ];
-    });
-
-    return response()->json(['products' => $products]);
-}
-
-public function addToCart(Request $request)
-{
-    // Validate product ID
-    $product = Product::findOrFail($request->product_id);
-
-    // Fetch current cart from session, if exists
-    $cart = session()->get('cart', []);
-
-    // Check if product already exists in cart
-    if(isset($cart[$product->id])) {
-        $cart[$product->id]['quantity']++;
-    } else {
-        // Add new product to cart
-        $cart[$product->id] = [
-            'name' => $product->name,
-            'quantity' => 1,
-            'price' => $product->price,
-            'image' => asset('storage/' . $product->image),
-        ];
-    }
-
-    // Update session with new cart
-    session()->put('cart', $cart);
-
-    return response()->json(['success' => 'Product added to cart!']);
-}
-
-    
 }

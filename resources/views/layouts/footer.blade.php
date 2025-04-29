@@ -4,11 +4,20 @@
             
             <p>Your one-stop shop for the latest fashion trends. Stay connected with us for amazing deals and updates!</p>
             <div class="social-icons">
-                <a href="#"><img src="https://img.icons8.com/ios-filled/50/ffffff/facebook.png" alt="Facebook"></a>
-                <a href="#"><img src="https://img.icons8.com/ios-filled/50/ffffff/twitter.png" alt="Twitter"></a>
-                <a href="#"><img src="https://img.icons8.com/ios-filled/50/ffffff/instagram.png" alt="Instagram"></a>
-                <a href="#"><img src="https://img.icons8.com/ios-filled/50/ffffff/linkedin.png" alt="LinkedIn"></a>
-            </div>
+    <a href="https://www.facebook.com/" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/facebook.png" alt="Facebook">
+    </a>
+    <a href="https://twitter.com/" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/twitter.png" alt="Twitter">
+    </a>
+    <a href="https://www.instagram.com/" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/instagram.png" alt="Instagram">
+    </a>
+    <a href="https://www.linkedin.com/" target="_blank">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/linkedin.png" alt="LinkedIn">
+    </a>
+</div>
+
             <p>&copy; 2025 My Website. All rights reserved.</p>
             
         </div>

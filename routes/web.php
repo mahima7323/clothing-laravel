@@ -12,6 +12,29 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AddressController;
 
+use App\Http\Controllers\AdminForgotPasswordController;
+use App\Http\Controllers\AdminResetPasswordController;
+
+// Route::get('admin/forgot-password', [AdminForgotPasswordController::class, 'showLinkRequestForm'])->name('admin.password.request');
+// Route::post('admin/forgot-password', [AdminForgotPasswordController::class, 'sendResetLinkEmail'])->name('admin.password.email');
+// Admin Forgot Password
+Route::get('admin/forgot-password', [AdminForgotPasswordController::class, 'showLinkRequestForm'])->name('admin.password.request');
+Route::post('admin/forgot-password', [AdminForgotPasswordController::class, 'sendResetLinkEmail'])->name('admin.password.email');
+
+
+Route::get('admin/reset-password/{token}', [AdminResetPasswordController::class, 'showResetForm'])->name('admin.password.reset');
+Route::post('admin/reset-password', [AdminResetPasswordController::class, 'reset'])->name('admin.password.update');
+
+
+
+Route::get('/address/create', [AddressController::class, 'create'])->name('address.create');
+Route::post('/address/store', [AddressController::class, 'store'])->name('address.store');
+// Route::get('/order-success', [OrderController::class, 'orderSuccess'])->name('order-success');
+//Route::get('/order-success/{order}', [OrderController::class, 'orderSuccess'])->name('order.success');
+// Route::get('/order-success/{orderId}', [OrderController::class, 'orderSuccess'])->name('order.success');
+
+
+
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('orders');
     Route::put('/orders/{order}', [OrderController::class, 'updateOrderStatus'])->name('updateOrderStatus');
@@ -45,8 +68,8 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-Route::get('/address/create', [AddressController::class, 'create'])->name('address.create');
-Route::post('/address/store', [AddressController::class, 'store'])->name('address.store');
+// Route::get('/address/create', [AddressController::class, 'create'])->name('address.create');
+// Route::post('/address/store', [AddressController::class, 'store'])->name('address.store');
 
 
 // Admin Routes
@@ -101,7 +124,7 @@ Route::middleware('auth')->group(function () {
 // Order Routes (Protected by auth middleware)
 Route::middleware(['auth'])->group(function () {
     Route::post('/place-order', [OrderController::class, 'placeOrder'])->name('order.place');
-    Route::get('/order-success', [OrderController::class, 'orderSuccess'])->name('order.success');
+    Route::get('/order-success/{orderId}', [OrderController::class, 'orderSuccess'])->name('order.success');
 });
 
 // User Registration and Login Routes

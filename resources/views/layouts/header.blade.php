@@ -223,14 +223,19 @@
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                 </button>
                 <div class="dropdown-menu" id="dropdown-menu">
-                    <a href="{{ route('profile.edit') }}">Update Profile</a>
-                    <!-- <a href="{{ route('order_success') }}">Order History</a> -->
-                    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        <i class="fa-solid fa-right-from-bracket"></i> Logout
-                    </a>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                        @csrf
-                    </form>
+                    @if(Auth::check())
+                        <a href="{{ route('profile.edit') }}">Update Profile</a>
+                        <a href="{{ route('feedbacks') }}">View Feedbacks</a>
+                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                            <i class="fa-solid fa-right-from-bracket"></i> Logout
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}">Login</a>
+                        <a href="{{ route('register') }}">Register</a>
+                    @endif
                 </div>
             </div>
         </div>

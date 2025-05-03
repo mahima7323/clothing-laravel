@@ -168,8 +168,8 @@
     
     <a href="{{ route('admin.users') }}"><i class="fa fa-users"></i> Users</a>
     <a href="{{ route('admin.orders.index') }}" class="{{ request()->is('admin/orders') ? 'active' : '' }}"><i class="fa fa-shopping-cart"></i> Orders</a>
-
-    <a href="#"><i class="fa fa-bar-chart"></i> Reports</a>
+    <a href="{{ route('feedback.list') }}"><i class="fa fa-comments"></i> Feedbacks</a>
+    <a href=""><i class="fa fa-bar-chart"></i> Reports</a>
     <a href="#"><i class="fa fa-cogs"></i> Settings</a>
     
     <form action="{{ route('admin.logout') }}" method="POST" style="display: inline;">

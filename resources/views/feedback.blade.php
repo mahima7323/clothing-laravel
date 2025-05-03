@@ -1,193 +1,100 @@
 @include('layouts.header')
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - Fashion Hub</title>
-
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+    <title>Feedback</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
+            background-color: #f8f9fa;
         }
 
-        header {
-            background-color: black;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .container {
-            max-width: 900px;
+        .feedback-container {
+            max-width: 600px;
             margin: 50px auto;
+            background-color: white;
             padding: 30px;
-            background-color: #fff;
-            border-radius: 15px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
         }
 
-        .container:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-        }
-
-        h2 {
-            color: #333;
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
-
-        p {
-            font-size: 1.1rem;
-            color: #666;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        form {
+        .star-rating {
+            direction: rtl;
+            font-size: 1.5rem;
             display: flex;
-            flex-direction: column;
-            gap: 15px;
+            justify-content: center;
         }
 
-        label {
-            margin-bottom: 5px;
-            font-weight: bold;
-            font-size: 1rem;
+        .star-rating input[type="radio"] {
+            display: none;
         }
 
-        input,
-        textarea {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
-
-        input:focus,
-        textarea:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-
-        button {
-            padding: 15px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
+        .star-rating label {
+            color: #ddd;
             cursor: pointer;
-            font-size: 18px;
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            padding: 0 5px;
         }
 
-        button:hover {
-            background-color: #0056b3;
-            transform: translateY(-3px);
-        }
-
-        .contact-info {
-            margin-top: 40px;
-            text-align: center;
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .contact-info h3 {
-            font-size: 1.8rem;
-            color: #333;
-            margin-bottom: 15px;
-            font-weight: 600;
-        }
-
-        .contact-info p {
-            margin: 10px 0;
-            font-size: 1.1rem;
-            color: #555;
-        }
-
-        .contact-info p i {
-            color: #007bff;
-            margin-right: 10px;
-            width: 20px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 15px;
-            background-color: #333;
-            color: #fff;
-            margin-top: 40px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 25px 20px;
-            }
-
-            h2 {
-                font-size: 2rem;
-            }
-
-            form input,
-            form textarea {
-                font-size: 15px;
-            }
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: gold;
         }
     </style>
 </head>
 
 <body>
-
     <div class="container">
-        <h2>Get in Touch</h2>
-        <p>If you have any questions, feedback, or inquiries, feel free to reach out to us. We’d love to hear from you!</p>
+        <div class="feedback-container">
+            <h3 class="text-center mb-4">We Value Your Feedback</h3>
 
-        <form action="/submit-contact" method="post">
-            @csrf
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-            <label for="name">Your Name</label>
-            <!-- Automatically fill the name if the user is logged in -->
-            <input type="text" id="name" name="name" value="{{ Auth::check() ? Auth::user()->name : '' }}" placeholder="Enter your name" required>
+            <form method="POST" action="{{ route('feedback.submit') }}">
+                @csrf
 
-            <label for="email">Your Email</label>
-            <!-- Automatically fill the email if the user is logged in -->
-            <input type="email" id="email" name="email" value="{{ Auth::check() ? Auth::user()->email : '' }}" placeholder="Enter your email" required>
+                <div class="mb-3">
+                    <label for="name" class="form-label">Your Name</label>
+                    <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+                    @error('name') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
 
-            <label for="message">Your Message</label>
-            <textarea id="message" name="message" placeholder="Write your message here" required></textarea>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Your Email</label>
+                    <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
+                    @error('email') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
 
-            <button type="submit">Send Message</button>
-        </form>
+                <div class="mb-3">
+                    <label class="form-label">Rating</label>
+                    <div class="star-rating">
+                        @for($i = 5; $i >= 1; $i--)
+                            <input type="radio" name="rating" id="star{{ $i }}" value="{{ $i }}">
+                            <label for="star{{ $i }}">&#9733;</label>
+                        @endfor
+                    </div>
+                    @error('rating') <small class="text-danger d-block text-center">{{ $message }}</small> @enderror
+                </div>
 
-        <div class="contact-info">
-            <h3>Contact Information</h3>
-            <p><i class="fas fa-envelope"></i><strong>Email:</strong> fashion@gmail.com</p>
-            <p><i class="fas fa-phone"></i><strong>Phone:</strong> +91 9157396433</p>
-            <p><i class="fas fa-map-marker-alt"></i><strong>Address:</strong> 123 Fashion St, Surat</p>
+                <div class="mb-3">
+                    <label for="message" class="form-label">Your Message</label>
+                    <textarea name="message" rows="4" class="form-control" required>{{ old('message') }}</textarea>
+                    @error('message') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary px-4">Submit Feedback</button>
+                </div>
+            </form>
         </div>
     </div>
-
 </body>
 
 </html>
-
 @include('layouts.footer')

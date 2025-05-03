@@ -14,6 +14,14 @@ use App\Http\Controllers\AddressController;
 
 use App\Http\Controllers\AdminForgotPasswordController;
 use App\Http\Controllers\AdminResetPasswordController;
+use App\Http\Controllers\FeedbackController;
+
+Route::get('/feedback', [FeedbackController::class, 'showForm'])->name('feedback.form');
+Route::post('/feedback', [FeedbackController::class, 'submitFeedback'])->name('feedback.submit');
+Route::get('/admin/feedbacks', [FeedbackController::class, 'list'])->name('feedback.list');
+Route::delete('/admin/feedbacks/{id}', [FeedbackController::class, 'delete'])->name('feedback.delete');
+Route::get('/feedbacks', [FeedbackController::class, 'showFeedbacks'])->name('feedbacks');
+
 
 // Route::get('admin/forgot-password', [AdminForgotPasswordController::class, 'showLinkRequestForm'])->name('admin.password.request');
 // Route::post('admin/forgot-password', [AdminForgotPasswordController::class, 'sendResetLinkEmail'])->name('admin.password.email');

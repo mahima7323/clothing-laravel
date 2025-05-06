@@ -1,37 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
             margin: 0;
             padding: 20px;
+            color: #333;
         }
 
         .container {
-            width: 80%;
-            margin: 0 auto;
+            width: 85%;
+            margin: 30px auto;
             background: #fff;
-            padding: 20px;
+            padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
         }
 
         h2 {
             color: #2c3e50;
-            font-size: 26px;
-            margin-bottom: 20px;
+            font-size: 30px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            position: relative;
+            padding-left: 35px;
+        }
+
+        h2 i {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3498db;
         }
 
         .empty-cart {
-            color: #666;
+            color: #888;
             font-size: 18px;
             margin-top: 20px;
+            text-align: center;
         }
 
         table {
@@ -41,49 +62,53 @@
         }
 
         th, td {
-            padding: 12px;
+            padding: 15px;
             border: 1px solid #ddd;
             text-align: center;
             font-size: 16px;
+            color: #555;
         }
 
         th {
-            background-color: #2c3e50;
+            background-color: #3498db;
             color: white;
+            text-transform: uppercase;
         }
 
         td img {
-            width: 50px;
+            width: 60px;
             border-radius: 5px;
+        }
+
+        .btn-danger, .btn-success {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s, transform 0.3s;
         }
 
         .btn-danger {
             background-color: #e74c3c;
             color: white;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background 0.3s;
         }
 
         .btn-danger:hover {
             background-color: #c0392b;
+            transform: scale(1.05);
         }
 
         .btn-success {
             background-color: #27ae60;
             color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            padding: 12px 25px;
             font-size: 18px;
-            transition: background 0.3s;
         }
 
         .btn-success:hover {
             background-color: #219150;
+            transform: scale(1.05);
         }
 
         .quantity {
@@ -96,9 +121,10 @@
             background-color: #3498db;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 6px 12px;
             font-size: 18px;
             cursor: pointer;
+            border-radius: 5px;
             transition: background 0.3s;
         }
 
@@ -107,22 +133,24 @@
         }
 
         .quantity input {
-            width: 40px;
+            width: 45px;
             text-align: center;
             border: 1px solid #ddd;
             font-size: 16px;
-            margin: 0 5px;
+            margin: 0 10px;
+            border-radius: 5px;
         }
 
         .grand-total {
-            font-size: 20px;
-            margin-top: 20px;
+            font-size: 24px;
             font-weight: bold;
+            color: #2c3e50;
+            margin-top: 30px;
         }
 
         .flash-message {
             padding: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             border-radius: 5px;
             font-size: 16px;
             display: none;
@@ -139,6 +167,29 @@
             color: #721c24;
         }
 
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .btn-success, .btn-danger {
+                font-size: 14px;
+                padding: 6px 12px;
+            }
+
+            .quantity button {
+                font-size: 16px;
+            }
+
+            .quantity input {
+                width: 30px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -253,7 +304,6 @@
             });
         });
 
-        // Remove item with SweetAlert Confirmation
         $('.remove-item').click(function () {
             var itemId = $(this).data('id');
             Swal.fire({

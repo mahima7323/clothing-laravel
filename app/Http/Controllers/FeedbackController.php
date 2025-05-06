@@ -40,6 +40,7 @@ class FeedbackController extends Controller
             $feedback->delete();
 
             return back()->with('success', 'Feedback deleted successfully!');
+            
 
         }
       

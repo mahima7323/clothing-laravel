@@ -1,175 +1,198 @@
 @include('layouts.header')
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
 <style>
-    .product-details {
-        padding: 50px 0;
-        background-color: #f8f9fa;
+    body {
+        background-color: #f1f3f6;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    .product-wrapper {
+        background-color: #fff;
+        margin: 50px auto;
+        padding: 30px;
         border-radius: 10px;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    }
-
-    .breadcrumb {
-        background: none;
-        padding-left: 0;
-        margin-bottom: 30px;
-    }
-
-    .breadcrumb-item + .breadcrumb-item::before {
-        content: ">";
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
     }
 
     .product-image {
         width: 100%;
-        height: auto;
-        max-width: 100%;
-        max-height: 400px; /* Adjust as necessary */
-        object-fit: contain; /* Ensures the image fits inside without distortion */
+        max-height: 300px; /* Reduced height */
+        object-fit: contain;
+        border: 1px solid #dee2e6;
         border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        transition: transform 0.3s ease;
+        padding: 10px;
+        background-color: #fff;
+        transition: 0.3s ease;
     }
 
     .product-image:hover {
-        transform: scale(1.05);
+        transform: scale(1.02);
     }
 
     .product-info h2 {
-        font-size: 2.2rem;
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 15px;
-        transition: color 0.3s ease;
-    }
-
-    .product-info h2:hover {
-        color: #007bff;
-    }
-
-    .product-info .price {
-        font-size: 1.8rem;
-        color: #b12704;
-        font-weight: 600;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #212529;
         margin-bottom: 10px;
+    }
+
+    .price-section {
+        margin: 15px 0;
+    }
+
+    .price {
+        font-size: 1.8rem;
+        color: #e53935;
+        font-weight: bold;
     }
 
     .old-price {
         text-decoration: line-through;
         color: #888;
-        margin-left: 15px;
-        font-size: 1.2rem;
-    }
-
-    .offers {
-        margin-top: 25px;
-        background: #fff;
-        border: 1px solid #ddd;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    .offers ul {
-        list-style-type: none;
-        padding-left: 0;
-        margin: 0;
-    }
-
-    .offers li {
-        margin-bottom: 12px;
+        margin-left: 10px;
         font-size: 1.1rem;
     }
 
+    .badge-offer {
+        background-color: #ff9800;
+        color: white;
+        padding: 5px 10px;
+        font-size: 0.85rem;
+        border-radius: 5px;
+        margin-left: 10px;
+    }
+
+    .description {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #555;
+        margin-bottom: 25px;
+    }
+
+    .btn-action {
+        padding: 12px 30px;
+        border-radius: 30px;
+        font-size: 1rem;
+        font-weight: bold;
+        border: none;
+        transition: all 0.3s ease;
+        margin-right: 15px;
+    }
+
+    .btn-cart {
+        background-color: #ff6f00;
+        color: white;
+    }
+
+    .btn-cart:hover {
+        background-color: #e65100;
+    }
+
+    .btn-wishlist {
+        background-color: #e91e63;
+        color: white;
+    }
+
+    .btn-wishlist:hover {
+        background-color: #ad1457;
+    }
+
+    .offers {
+        margin-top: 30px;
+        padding: 20px;
+        background: #f8f9fa;
+        border: 1px dashed #ccc;
+        border-radius: 8px;
+    }
+
+    .offers h5 {
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        color: #2e7d32;
+    }
+
+    .offers ul {
+        list-style: none;
+        padding: 0;
+        font-size: 0.95rem;
+    }
+
     .offers li::before {
-        content: "✔️ ";
-        color: #28a745;
+        content: "🎁";
+        margin-right: 10px;
     }
 
-    .btn-back, .btn-home, .btn-products {
-        margin-top: 20px;
+    .back-link {
         display: inline-block;
-        font-size: 1.3rem;
-        padding: 12px 25px;
-        border-radius: 50px;
-        text-decoration: none;
-        color: #fff;
-        background-color: #007bff;
-        border: 1px solid #007bff;
-        transition: background-color 0.3s ease, transform 0.3s ease;
-        text-align: center;
-    }
-
-    .btn-back:hover, .btn-home:hover, .btn-products:hover {
-        background-color: #0056b3;
-        transform: scale(1.05);
-    }
-
-    .footer-buttons {
-        text-align: center;
         margin-top: 40px;
+        text-decoration: none;
+        color: #007bff;
+        font-weight: 500;
     }
 
-    .footer-buttons a {
-        margin: 0 15px;
+    .back-link:hover {
+        text-decoration: underline;
     }
 
     @media (max-width: 768px) {
-        .product-info {
-            text-align: center;
-        }
-
         .product-image {
-            max-height: 300px;
+            max-height: 200px; /* Further reduced for smaller screens */
         }
 
-        .btn-back, .btn-home, .btn-products {
-            font-size: 1rem;
-            padding: 8px 20px;
+        .btn-action {
+            width: 100%;
+            margin-bottom: 10px;
         }
     }
 </style>
 
-<div class="container product-details">
-    <!-- Breadcrumbs -->
-
-    <div class="row align-items-center">
-        <!-- Left side: Image -->
+<div class="container product-wrapper">
+    <div class="row">
+        <!-- Left: Image -->
         <div class="col-md-6">
             <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="product-image">
         </div>
 
-        <!-- Right side: Info -->
+        <!-- Right: Info -->
         <div class="col-md-6 product-info">
             <h2>{{ $product->name }}</h2>
-            <p class="price">₹{{ number_format($product->price, 2) }}
+
+            <div class="price-section">
+                <span class="price">₹{{ number_format($product->price, 2) }}</span>
                 <span class="old-price">₹{{ number_format($product->price + 300, 2) }}</span>
-            </p>
-            <p>{{ $product->description }}</p>
-            <div class="d-flex justify-content-between">
-                <button class="btn btn-sm btn-primary btn-cart add-to-cart"
+                <span class="badge-offer">20% OFF</span>
+            </div>
+
+            <p class="description">{{ $product->description }}</p>
+
+            <div class="mb-4">
+                <button class="btn-action btn-cart add-to-cart"
                         data-id="{{ $product->id }}"
                         data-name="{{ $product->name }}"
                         data-price="{{ $product->price }}"
                         data-image="{{ asset('storage/' . $product->image) }}">
-                    <i class="fa fa-cart-plus me-1"></i> Cart
+                    <i class="fa fa-shopping-cart me-1"></i> Add to Cart
                 </button>
-                <button class="btn btn-sm btn-danger btn-wishlist add-to-wishlist"
+
+                <button class="btn-action btn-wishlist add-to-wishlist"
                         data-id="{{ $product->id }}">
                     <i class="fa fa-heart me-1"></i> Wishlist
                 </button>
             </div>
 
             <div class="offers">
-                <strong>Offers:</strong>
+                <h5>Available Offers</h5>
                 <ul>
-                    <li>💰 Cashback: Upto ₹20 via Pay balance</li>
-                    <li>🏦 Bank Offer: Upto ₹3,000 off on credit cards</li>
-                    <li>📄 GST Invoice for business purchases</li>
+                    <li>Extra ₹200 discount on first order</li>
+                    <li>10% off with Axis Bank Credit Cards</li>
+                    <li>Get GST invoice for business purchases</li>
                 </ul>
             </div>
 
-            <!-- Back Button -->
-            <a href="{{ url('/product_list') }}" class="btn btn-outline-secondary btn-back">
-                ⬅ Back to Products
+            <a href="{{ url('/product_list') }}" class="back-link">
+                <i class="fa fa-arrow-left"></i> Back to Products
             </a>
         </div>
     </div>
@@ -178,33 +201,31 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     // Add to Cart
-    $(document).on("click", ".add-to-cart", function() {
+    $(document).on("click", ".add-to-cart", function () {
         $.post("{{ route('cart.add') }}", {
             _token: "{{ csrf_token() }}",
             id: $(this).data("id"),
             name: $(this).data("name"),
             price: $(this).data("price"),
             image: $(this).data("image")
-        }, function(response) {
+        }, function (response) {
             alert(response.message);
-        }).fail(function(xhr) {
+        }).fail(function (xhr) {
             alert("Error: " + xhr.responseJSON.message);
         });
     });
 
     // Add to Wishlist
-    $(document).on("click", ".add-to-wishlist", function() {
+    $(document).on("click", ".add-to-wishlist", function () {
         $.post("{{ route('wishlist.add') }}", {
             _token: "{{ csrf_token() }}",
             id: $(this).data("id")
-        }, function(response) {
+        }, function (response) {
             alert(response.message);
-        }).fail(function(xhr) {
+        }).fail(function (xhr) {
             alert("Error: " + xhr.responseJSON.message);
         });
     });
 </script>
-
-<!-- Footer with Home and Products Buttons -->
 
 @include('layouts.footer')

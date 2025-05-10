@@ -11,10 +11,12 @@ use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\RazorpayController;
 
 use App\Http\Controllers\AdminForgotPasswordController;
 use App\Http\Controllers\AdminResetPasswordController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\StripePaymentController;
 
 Route::get('/feedback', [FeedbackController::class, 'showForm'])->name('feedback.form');
 Route::post('/feedback', [FeedbackController::class, 'submitFeedback'])->name('feedback.submit');
@@ -154,3 +156,18 @@ Route::get('/feedback', function () { return view('feedback'); })->name('feedbac
 
 // Routes for viewing products by category (User Side)
 Route::get('/category/{categoryName}', [ProductController::class, 'showCategoryProducts'])->name('category.products');
+
+//RazorPay
+// Route::get('/razorpay',[RazorpayController::class,'index']);
+// Route::post('/razorpay/payment',[RazorpayController::class,'store'])->name('razorpay.payment');
+
+Route::get('/stripe', [StripePaymentController::class, 'index']);
+Route::post('/stripe', [StripePaymentController::class, 'checkout'])->name('stripe.checkout');
+Route::get('/stripe-success', [OrderController::class, 'stripeSuccess'])->name('stripe.success');
+Route::get('/stripe-cancel', function () {
+    return 'Payment was cancelled.';
+})->name('stripe.cancel');
+
+
+// Route::get('/razorpay', [RazorpayPaymentController::class, 'index']);
+// Route::post('/razorpay-payment', [RazorpayPaymentController::class, 'store'])->name('razorpay.payment.store');

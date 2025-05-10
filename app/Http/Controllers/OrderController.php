@@ -11,7 +11,8 @@ use App\Models\Cart; // Ensure you have Cart model included
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Address;
-
+use Stripe\Stripe;
+use Stripe\Checkout\Session;
 
 
 
@@ -45,8 +46,6 @@ class OrderController extends Controller
     // Method to place an order
     public function placeOrder(Request $request)
     {
-        // Check if the user is logged in
-
         $request->validate([
             'street' => 'required',
             'city' => 'required',
@@ -55,44 +54,76 @@ class OrderController extends Controller
             'country' => 'required',
         ]);
 
-        // Check if user is logged in
-        // Store the address for the logged-in user
-        Address::create([
-            'user_id' => auth()->user()->id,
-            'street' => $request->street,
-            'city' => $request->city,
-            'state' => $request->state,
-            'zip_code' => $request->zip_code,
-            'country' => $request->country,
-        ]);
-
-        // Retrieve the cart from the database for the logged-in user
         $userId = Auth::id();
         $cartItems = Cart::with('product')->where('user_id', $userId)->get();
 
-        // Check if the cart is empty
         if ($cartItems->isEmpty()) {
-            return response()->json(['success' => false, 'message' => 'Your cart is empty!']);
+            return redirect()->back()->with('error', 'Your cart is empty!');
         }
 
-        // Check if the cart is empty
-        if ($cartItems->isEmpty()) {
-            return response()->json(['success' => false, 'message' => 'Your cart is empty!']);
-        }
-
-        // Calculate the total price
         $totalPrice = $cartItems->sum(function ($item) {
             return $item->product->price * $item->quantity;
         });
+
+        // Save address in session (so we can use it after payment)
+        session([
+            'address' => $request->only(['street', 'city', 'state', 'zip_code', 'country']),
+            'cart_total' => $totalPrice
+        ]);
+
+        // Stripe Payment
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        $lineItems = [];
+
+        foreach ($cartItems as $item) {
+            $lineItems[] = [
+                'price_data' => [
+                    'currency' => 'inr',
+                    'product_data' => [
+                        'name' => $item->product->name,
+                    ],
+                    'unit_amount' => $item->product->price * 100, // in paise
+                ],
+                'quantity' => $item->quantity,
+            ];
+        }
+
+        $checkoutSession = Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => $lineItems,
+            'mode' => 'payment',
+            'success_url' => route('stripe.success'),
+            'cancel_url' => route('stripe.cancel'),
+        ]);
+
+        return redirect($checkoutSession->url);
+    }
+    public function stripeSuccess()
+    {
+        $userId = Auth::id();
+
+        // Store the address
+        $addressData = session('address');
+        Address::create([
+            'user_id' => $userId,
+            'street' => $addressData['street'],
+            'city' => $addressData['city'],
+            'state' => $addressData['state'],
+            'zip_code' => $addressData['zip_code'],
+            'country' => $addressData['country'],
+        ]);
+
+        $cartItems = Cart::with('product')->where('user_id', $userId)->get();
+        $totalPrice = session('cart_total');
 
         // Create the order
         $order = Order::create([
             'user_id' => $userId,
             'total_price' => $totalPrice,
-            'status' => 'Pending',  // Default status for a new order
+            'status' => 'Paid',
         ]);
 
-        // Save order items
         foreach ($cartItems as $item) {
             OrderItem::create([
                 'order_id' => $order->id,
@@ -102,14 +133,12 @@ class OrderController extends Controller
             ]);
         }
 
-        // Clear the cart after placing the order
+        // Clear cart
         Cart::where('user_id', $userId)->delete();
 
-
-        // Send a simple email to the user with order details
+        // Send email
         $emailContent = "Dear " . Auth::user()->name . ",\n\n";
-        $emailContent .= "Thank you for your order! Your order has been placed successfully.\n\n";
-        $emailContent .= "Order Summary:\n";
+        $emailContent .= "Thank you for your payment! Your order has been placed.\n\nOrder Summary:\n";
 
         foreach ($cartItems as $item) {
             $emailContent .= $item->product->name . " - " . $item->quantity . " x ₹" . $item->product->price . "\n";
@@ -118,22 +147,12 @@ class OrderController extends Controller
         $emailContent .= "\nTotal: ₹" . number_format($totalPrice, 2) . "\n\n";
         $emailContent .= "Thank you for shopping with us!\n";
 
-        // Send the email using Mail::raw()
         Mail::raw($emailContent, function ($message) {
-            $message->to(Auth::user()->email)
-                ->subject('Order Confirmation');
+            $message->to(Auth::user()->email)->subject('Payment Successful - Order Confirmation');
         });
 
-
-        // Return success message and redirect route
         return redirect()->route('order.success', ['orderId' => $order->id])
-            ->with('success', 'Your order has been placed successfully!');
-
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'Your order has been placed successfully!',
-        //     'redirect' => route('order.success')
-        // ]);
+            ->with('success', 'Payment successful and order placed!');
     }
 
     // Method to display the order success page after a successful order placement
